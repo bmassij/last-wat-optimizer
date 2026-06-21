@@ -19,3 +19,4 @@
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+orc-app/

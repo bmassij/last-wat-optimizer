@@ -9,7 +9,7 @@
 
 ## Stap 1 — Dependencies installeren
 
-Open een terminal in de `orc-app` map en run:
+Open een terminal in de projectmap en run:
 
 ```bash
 npm install
@@ -47,10 +47,11 @@ git push -u origin main
 ### Optie A — Via Vercel website (makkelijkst)
 1. Ga naar vercel.com en log in
 2. Klik **Add New → Project**
-3. Importeer je GitHub repo `orc-app`
+3. Importeer je GitHub repo
 4. Framework = **Next.js** (auto-detected)
-5. Klik **Deploy**
-6. Klaar — je krijgt een URL zoals `orc-app.vercel.app`
+5. Root Directory = **leeg** (repo-root)
+6. Output Directory = **leeg**
+7. Klik **Deploy**
 
 ### Optie B — Via Vercel CLI
 ```bash
