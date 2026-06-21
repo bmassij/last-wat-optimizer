@@ -2,240 +2,495 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Last War: Survival inspired palette ── */
+/* ══════════════════════════════════════════════════════════════
+   LAST WAR: Survival — vibrant mobile-game UI theme
+   Inspired by official store + in-game HUD (hero blue, purple,
+   orange CTAs, glossy panels, rarity-colored tiles)
+   ══════════════════════════════════════════════════════════════ */
 :root {
-  --bg0: #0a120c;
-  --bg1: #101a12;
-  --bg2: #162218;
-  --bg3: #1c2c1e;
-  --bg4: #243828;
-  --border: #2e4432;
-  --border2: #3a5240;
-  --border-gold: rgba(200, 150, 12, 0.45);
-  --gold: #c8960c;
-  --gold2: #f0c030;
-  --gold3: #ffe070;
-  --goldglow: rgba(240, 192, 48, 0.22);
-  --green: #2a8a3a;
-  --green2: #5cd85a;
-  --greenglow: rgba(92, 216, 90, 0.18);
-  --blue: #1a6a8a;
-  --blue2: #40b0e0;
-  --blueglow: rgba(64, 176, 224, 0.15);
-  --orange: #c06010;
-  --orange2: #e88020;
-  --orangeglow: rgba(232, 128, 32, 0.15);
-  --red: #a02818;
-  --red2: #e04030;
-  --redglow: rgba(224, 64, 48, 0.15);
-  --purple: #6840a8;
-  --purple2: #a070e8;
-  --purpleglow: rgba(160, 112, 232, 0.15);
-  --t1: #e8dcc8;
-  --t2: #b0a080;
-  --t3: #706050;
-  --t4: #443830;
+  /* Deep navy / purple game backgrounds */
+  --bg0: #0a1235;
+  --bg1: #101e55;
+  --bg2: #182868;
+  --bg3: #203480;
+  --bg4: #284898;
+
+  --border: rgba(100, 150, 255, 0.18);
+  --border2: rgba(130, 180, 255, 0.28);
+  --border-gold: rgba(255, 170, 40, 0.65);
+
+  /* Orange-gold CTAs (official store buttons) */
+  --gold: #e89010;
+  --gold2: #ffc830;
+  --gold3: #ffe878;
+  --goldglow: rgba(255, 180, 40, 0.35);
+
+  /* Grass green (in-game world) */
+  --green: #2e9e40;
+  --green2: #5ee060;
+  --greenglow: rgba(80, 220, 90, 0.3);
+
+  /* Hero blue (soldier uniforms / UI) */
+  --blue: #1a6ab8;
+  --blue2: #48b8ff;
+  --blueglow: rgba(60, 170, 255, 0.35);
+
+  --orange: #e07010;
+  --orange2: #ff9020;
+  --orangeglow: rgba(255, 140, 30, 0.3);
+
+  --red: #c02820;
+  --red2: #ff4840;
+  --redglow: rgba(255, 60, 50, 0.3);
+
+  /* Epic purple rarity */
+  --purple: #7040c0;
+  --purple2: #b070ff;
+  --purpleglow: rgba(160, 90, 255, 0.3);
+
+  /* White text with game HUD feel */
+  --t1: #ffffff;
+  --t2: #c0d4f8;
+  --t3: #8098c8;
+  --t4: #506888;
+
   --font-display: var(--font-bebas), 'Bebas Neue', Impact, sans-serif;
   --font-body: var(--font-barlow), 'Barlow', 'Segoe UI', system-ui, sans-serif;
+
+  /* Panel gloss */
+  --panel-top: #3a5cc0;
+  --panel-mid: #2848a0;
+  --panel-bot: #1a3078;
+  --panel-inset: inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -2px 0 rgba(0,0,0,0.25);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(200, 150, 12, 0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(42, 138, 58, 0.05) 0%, transparent 50%),
-    var(--bg0);
+    radial-gradient(ellipse 120% 80% at 50% 110%, rgba(100, 50, 180, 0.45) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at 80% 0%, rgba(40, 120, 255, 0.2) 0%, transparent 50%),
+    linear-gradient(180deg, #141e50 0%, var(--bg0) 40%, #0c1040 100%);
+  background-attachment: fixed;
   color: var(--t1);
   font-family: var(--font-body);
   min-height: 100vh;
   font-size: 14px;
   line-height: 1.5;
+  position: relative;
 }
 
-/* ── Typography (Last War style) ── */
+/* Halftone texture overlay (official store hero feel) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: radial-gradient(circle, #fff 1px, transparent 1px);
+  background-size: 12px 12px;
+  background-position: 0 60%;
+}
+
+/* ── Typography ── */
 .lw-display {
   font-family: var(--font-display);
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.6);
 }
 
+/* LAST WAR logo-style title */
 .lw-gold-text {
   font-family: var(--font-display);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  background: linear-gradient(180deg, var(--gold3) 0%, var(--gold2) 45%, var(--gold) 100%);
+  background: linear-gradient(180deg, #fff8c0 0%, var(--gold3) 30%, var(--gold2) 60%, #c07000 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+  filter: drop-shadow(0 2px 0 #5a3000) drop-shadow(0 4px 8px rgba(0,0,0,0.7));
+}
+
+.lw-status-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
 }
 
 .lw-section-title {
   font-family: var(--font-display);
-  font-size: 11px;
-  letter-spacing: 0.14em;
+  font-size: 12px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--gold2);
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
   white-space: nowrap;
+  position: relative;
+  padding: 4px 14px 4px 10px;
+  background: linear-gradient(90deg, var(--orange2) 0%, #e06010 100%);
+  border-radius: 4px 12px 12px 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.25);
 }
 
 .lw-label {
   font-size: 9px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--t3);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
-/* ── Panels & cards ── */
+/* ── Glossy game panels ── */
 .lw-panel {
-  background: linear-gradient(180deg, var(--bg3) 0%, var(--bg2) 100%);
-  border: 1px solid var(--border-gold);
-  border-radius: 10px;
+  background: linear-gradient(180deg, var(--panel-top) 0%, var(--panel-mid) 45%, var(--panel-bot) 100%);
+  border: 2px solid rgba(100, 160, 255, 0.4);
+  border-radius: 14px;
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.4) inset,
-    0 4px 20px rgba(0, 0, 0, 0.35);
+    var(--panel-inset),
+    0 6px 24px rgba(0, 0, 20, 0.5),
+    0 0 0 1px rgba(0,0,0,0.3);
 }
 
 .lw-panel-header {
-  border-bottom: 1px solid var(--border-gold);
-  background: linear-gradient(180deg, rgba(200, 150, 12, 0.08) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%);
 }
 
 .lw-stat-card {
-  background: linear-gradient(180deg, var(--bg3) 0%, var(--bg2) 100%);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  background: linear-gradient(180deg, #3458b8 0%, #243878 100%);
+  border: 2px solid rgba(80, 140, 255, 0.35);
+  border-radius: 12px;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--panel-inset), 0 4px 12px rgba(0,0,20,0.4);
 }
 
 .lw-stat-card::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent, var(--gold2)), transparent);
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent, var(--blue2)), transparent);
 }
 
-/* ── Topbar ── */
+.lw-game-tile {
+  background: linear-gradient(180deg, #2e4ca8 0%, #1e3478 100%);
+  border: 2px solid rgba(80, 140, 255, 0.3);
+  border-radius: 10px;
+  box-shadow: var(--panel-inset), 0 3px 10px rgba(0,0,20,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.lw-game-tile.active {
+  border-color: var(--gold2);
+  box-shadow: var(--panel-inset), 0 0 16px var(--goldglow), 0 4px 12px rgba(0,0,20,0.4);
+  transform: scale(1.03);
+}
+
+.lw-game-tile.current-ar {
+  border-color: var(--blue2);
+  box-shadow: var(--panel-inset), 0 0 16px var(--blueglow), 0 4px 12px rgba(0,0,20,0.4);
+}
+
+.lw-game-tile.overlap-ar {
+  border-color: var(--gold2);
+  box-shadow: var(--panel-inset), 0 0 12px var(--goldglow);
+}
+
+.lw-window-card {
+  background: linear-gradient(180deg, #2a4898 0%, #1c3068 100%);
+  border: 2px solid rgba(80, 140, 255, 0.3);
+  border-radius: 14px;
+  box-shadow: var(--panel-inset), 0 4px 16px rgba(0,0,20,0.4);
+}
+
+.lw-window-card.perfect {
+  border-color: var(--gold2);
+  box-shadow: var(--panel-inset), 0 0 20px var(--goldglow), 0 4px 16px rgba(0,0,20,0.4);
+}
+
+.lw-window-card.good {
+  border-color: var(--green2);
+  box-shadow: var(--panel-inset), 0 0 14px var(--greenglow);
+}
+
+/* ── Topbar (official store navy header) ── */
 .lw-topbar {
-  background: linear-gradient(180deg, #1a2818 0%, var(--bg1) 100%);
-  border-bottom: 2px solid var(--border-gold);
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(180deg, #1a2868 0%, #101e50 100%);
+  border-bottom: 3px solid var(--blue2);
+  box-shadow: 0 4px 20px rgba(0, 0, 40, 0.6);
 }
 
 .lw-logo-mark {
-  background: linear-gradient(135deg, var(--bg4) 0%, var(--bg3) 100%);
-  border: 2px solid var(--gold);
-  border-radius: 8px;
-  box-shadow: 0 0 14px var(--goldglow), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, #3a5cc0 0%, #1e3478 100%);
+  border: 2px solid var(--gold2);
+  border-radius: 10px;
+  box-shadow: 0 0 16px var(--goldglow), var(--panel-inset);
 }
 
-/* ── Buttons ── */
+/* ── Tab bar ── */
+.lw-tab-bar {
+  background: linear-gradient(180deg, #141e50 0%, #0e1640 100%);
+  border-bottom: 2px solid rgba(60, 120, 255, 0.25);
+  display: flex;
+  overflow-x: auto;
+}
+
+.lw-tab {
+  padding: 10px 16px;
+  font-size: 11px;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+  color: var(--t3);
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  background: transparent;
+  font-family: var(--font-body);
+  letter-spacing: 0.04em;
+}
+
+.lw-tab:hover { color: var(--t2); }
+
+.lw-tab.active {
+  color: #fff;
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  border-bottom-color: var(--orange2);
+  background: linear-gradient(180deg, rgba(255,140,30,0.15) 0%, transparent 100%);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+/* ── Buttons (store CTA style) ── */
 .lw-btn-gold {
-  background: linear-gradient(180deg, #ffe060 0%, var(--gold2) 40%, var(--gold) 100%);
-  color: #1a1000;
-  border: 1px solid #a07008;
-  border-radius: 6px;
+  background: linear-gradient(180deg, #ffe878 0%, var(--gold2) 35%, var(--gold) 70%, #c07000 100%);
+  color: #3a1800;
+  border: 2px solid #8a5000;
+  border-radius: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.45);
   cursor: pointer;
-  transition: filter 0.15s;
+  transition: filter 0.15s, transform 0.1s;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.3);
 }
-.lw-btn-gold:active { filter: brightness(0.92); }
+.lw-btn-gold:hover { filter: brightness(1.08); }
+.lw-btn-gold:active { filter: brightness(0.95); transform: scale(0.98); }
 
 .lw-btn-secondary {
-  background: var(--bg4);
-  border: 1px solid var(--border2);
+  background: linear-gradient(180deg, #3a5090 0%, #283870 100%);
+  border: 2px solid rgba(100,150,255,0.3);
   color: var(--t2);
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
+  box-shadow: var(--panel-inset);
 }
 
-/* ── Pills & badges ── */
+/* ── Pills ── */
 .lw-pill-vs {
-  background: var(--goldglow);
-  border: 1px solid var(--gold);
-  color: var(--gold2);
+  background: linear-gradient(180deg, rgba(255,180,40,0.25) 0%, rgba(200,120,10,0.15) 100%);
+  border: 2px solid var(--gold2);
+  color: var(--gold3);
   font-family: var(--font-display);
   letter-spacing: 0.1em;
+  box-shadow: 0 0 12px var(--goldglow), inset 0 1px 0 rgba(255,255,255,0.15);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
 }
 
 .lw-pill-ar {
-  background: var(--blueglow);
-  border: 1px solid var(--blue2);
+  background: linear-gradient(180deg, rgba(60,170,255,0.25) 0%, rgba(30,100,200,0.15) 100%);
+  border: 2px solid var(--blue2);
   color: var(--blue2);
   font-family: var(--font-display);
   letter-spacing: 0.1em;
+  box-shadow: 0 0 12px var(--blueglow), inset 0 1px 0 rgba(255,255,255,0.15);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
 }
 
+/* ── Command box ── */
 .lw-command-box {
-  background: linear-gradient(180deg, rgba(42, 138, 58, 0.12) 0%, var(--bg3) 100%);
-  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(60,170,255,0.12) 0%, rgba(20,40,100,0.6) 100%);
+  border-radius: 12px;
   position: relative;
+  box-shadow: var(--panel-inset);
 }
 
 .lw-command-box.perfect {
-  border: 1px solid var(--green);
-  box-shadow: 0 0 20px var(--greenglow);
+  border: 2px solid var(--green2);
+  box-shadow: var(--panel-inset), 0 0 24px var(--greenglow);
 }
 .lw-command-box.good {
-  border: 1px solid var(--gold);
-  box-shadow: 0 0 12px var(--goldglow);
+  border: 2px solid var(--gold2);
+  box-shadow: var(--panel-inset), 0 0 16px var(--goldglow);
 }
 .lw-command-box.low {
-  border: 1px solid var(--border2);
+  border: 2px solid rgba(100,150,255,0.25);
 }
 
 /* ── Section divider ── */
 .lw-divider {
   flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, var(--border-gold), transparent);
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255,140,30,0.5), transparent);
+  border-radius: 1px;
 }
 
 /* ── Inputs ── */
 .lw-input, .lw-select {
-  background: var(--bg4);
-  border: 1px solid var(--border2);
+  background: linear-gradient(180deg, #1e3478 0%, #142860 100%);
+  border: 2px solid rgba(80, 140, 255, 0.35);
   color: var(--t1);
-  border-radius: 6px;
+  border-radius: 8px;
   outline: none;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
 }
 .lw-input:focus, .lw-select:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 2px var(--goldglow);
+  border-color: var(--blue2);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 0 2px var(--blueglow);
 }
 
-/* ── AR tags ── */
+/* ── AR tags (inventory rarity tiles) ── */
 .ar-tag {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 2px 7px;
-  border-radius: 4px;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
   font-size: 9px;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
 }
-.t-build { background: rgba(64, 176, 224, 0.12); color: var(--blue2); border: 1px solid rgba(64, 176, 224, 0.25); }
-.t-unit  { background: rgba(232, 128, 32, 0.12); color: var(--orange2); border: 1px solid rgba(232, 128, 32, 0.25); }
-.t-tech  { background: rgba(92, 216, 90, 0.12); color: var(--green2); border: 1px solid rgba(92, 216, 90, 0.25); }
-.t-drone { background: rgba(160, 112, 232, 0.12); color: var(--purple2); border: 1px solid rgba(160, 112, 232, 0.25); }
-.t-hero  { background: rgba(240, 192, 48, 0.12); color: var(--gold2); border: 1px solid rgba(240, 192, 48, 0.25); }
+.t-build { background: linear-gradient(180deg, rgba(60,170,255,0.3) 0%, rgba(30,100,200,0.2) 100%); color: #90d8ff; border: 2px solid rgba(60,170,255,0.5); }
+.t-unit  { background: linear-gradient(180deg, rgba(255,140,30,0.3) 0%, rgba(200,80,10,0.2) 100%); color: #ffc870; border: 2px solid rgba(255,140,30,0.5); }
+.t-tech  { background: linear-gradient(180deg, rgba(80,220,90,0.3) 0%, rgba(40,160,50,0.2) 100%); color: #90ff90; border: 2px solid rgba(80,220,90,0.5); }
+.t-drone { background: linear-gradient(180deg, rgba(160,90,255,0.3) 0%, rgba(100,50,180,0.2) 100%); color: #d0a0ff; border: 2px solid rgba(160,90,255,0.5); }
+.t-hero  { background: linear-gradient(180deg, rgba(255,180,40,0.35) 0%, rgba(200,120,10,0.2) 100%); color: #ffe878; border: 2px solid rgba(255,180,40,0.55); }
 
 /* ── Overlap badges ── */
-.ol-perfect { background: rgba(240, 192, 48, 0.15); border: 1px solid var(--gold); color: var(--gold3); }
-.ol-good    { background: rgba(92, 216, 90, 0.12); border: 1px solid var(--green2); color: var(--green2); }
-.ol-low     { background: var(--bg4); border: 1px solid var(--border); color: var(--t3); }
+.ol-perfect {
+  background: linear-gradient(180deg, rgba(255,200,60,0.35) 0%, rgba(200,130,10,0.25) 100%);
+  border: 2px solid var(--gold2);
+  color: var(--gold3);
+  box-shadow: 0 0 10px var(--goldglow), inset 0 1px 0 rgba(255,255,255,0.2);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+.ol-good {
+  background: linear-gradient(180deg, rgba(80,220,90,0.3) 0%, rgba(40,160,50,0.2) 100%);
+  border: 2px solid var(--green2);
+  color: #90ff90;
+  box-shadow: 0 0 8px var(--greenglow);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+.ol-low {
+  background: linear-gradient(180deg, #2a4078 0%, #1e3060 100%);
+  border: 2px solid rgba(80,120,200,0.25);
+  color: var(--t3);
+}
+
+/* ── Resource / tag pills ── */
+.lw-res-pill {
+  background: linear-gradient(180deg, rgba(255,180,40,0.2) 0%, rgba(200,120,10,0.12) 100%);
+  border: 1.5px solid rgba(255,180,40,0.45);
+  color: var(--gold3);
+  border-radius: 20px;
+  font-size: 9px;
+  padding: 2px 8px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.lw-res-pill.dim {
+  background: linear-gradient(180deg, #2a4078 0%, #1e3060 100%);
+  border-color: rgba(80,120,200,0.25);
+  color: var(--t3);
+}
+
+/* ── VS banner ── */
+.lw-vs-banner {
+  background: linear-gradient(90deg, rgba(255,140,30,0.2) 0%, rgba(60,100,200,0.08) 60%, transparent 100%);
+  border: 2px solid rgba(255,140,30,0.4);
+  border-left: 4px solid var(--orange2);
+  padding: 10px 14px;
+  margin: 10px 14px 0;
+  border-radius: 0 12px 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,30,0.4);
+}
+
+.lw-vs-banner img {
+  border-radius: 8px;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.5));
+}
+
+/* ── Icons (inventory frame) ── */
+.lw-icon {
+  image-rendering: auto;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  vertical-align: middle;
+}
+
+.lw-icon-frame {
+  background: linear-gradient(135deg, #3a5cc0 0%, #1e3478 100%);
+  border: 2px solid rgba(100, 160, 255, 0.4);
+  border-radius: 8px;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--panel-inset), 0 2px 6px rgba(0,0,20,0.35);
+}
+
+/* ── Sub-panels inside dashboard ── */
+.lw-sub-panel {
+  background: linear-gradient(180deg, rgba(50,80,160,0.5) 0%, rgba(30,50,120,0.4) 100%);
+  border: 1.5px solid rgba(80, 140, 255, 0.25);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+/* ── Config bar ── */
+.lw-config-bar {
+  background: linear-gradient(180deg, #141e50 0%, #101840 100%);
+  border-bottom: 1px solid rgba(60, 120, 255, 0.2);
+}
+
+/* ── Alert ── */
+.lw-alert {
+  background: linear-gradient(90deg, rgba(200,40,30,0.2) 0%, rgba(100,20,15,0.1) 100%);
+  border: 2px solid rgba(255,60,50,0.4);
+  border-left: 4px solid var(--red2);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,20,0.3);
+}
+
+/* ── Progress bars (game HUD) ── */
+.lw-progress-track {
+  background: rgba(0,0,30,0.5);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(80,120,200,0.2);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+}
+.lw-progress-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.7s ease;
+}
+.lw-progress-fill.green { background: linear-gradient(90deg, #2a9e40, #60e860); box-shadow: 0 0 8px var(--greenglow); }
+.lw-progress-fill.gold  { background: linear-gradient(90deg, #c08000, #ffd040); box-shadow: 0 0 8px var(--goldglow); }
+.lw-progress-fill.red   { background: linear-gradient(90deg, #a02018, #ff4840); }
 
 /* ── Animations ── */
 @keyframes blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.2; }
+  50% { opacity: 0.3; }
 }
 .blink { animation: blink 2s infinite; }
 
@@ -243,47 +498,15 @@ body {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
-.lw-icon {
-  image-rendering: auto;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
-  vertical-align: middle;
+.lw-shimmer-bar {
+  background: linear-gradient(90deg, #2a9e40 0%, #60e860 50%, #2a9e40 100%);
+  background-size: 200% 100%;
+  animation: lw-shimmer 3s ease infinite;
 }
 
-.lw-icon-lg {
-  width: 28px;
-  height: 28px;
+/* ── Footer ── */
+.lw-footer {
+  border-top: 1px solid rgba(60, 120, 255, 0.15);
+  color: var(--t4);
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,30,0.4) 100%);
 }
-
-.lw-icon-sm {
-  width: 16px;
-  height: 16px;
-}
-
-.lw-icon-frame {
-  background: linear-gradient(135deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 100%);
-  border: 1px solid var(--border-gold);
-  border-radius: 6px;
-  padding: 3px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.lw-vs-banner {
-  background: linear-gradient(90deg, rgba(200,150,12,0.12) 0%, transparent 100%);
-  border-left: 3px solid var(--gold);
-  padding: 8px 12px;
-  margin: 8px 14px 0;
-  border-radius: 0 8px 8px 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.lw-vs-banner img {
-  width: 48px;
-  height: auto;
-  border-radius: 4px;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
-}
-
