@@ -2,1502 +2,1235 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ORC — Optimization Resource Commander</title>
 <style>
-  :root {
-    --bg-primary: #0a0c10;
-    --bg-secondary: #0f1318;
-    --bg-panel: #141a22;
-    --bg-panel-light: #1a2230;
-    --border-gold: #c8922a;
-    --border-blue: #1e6fa8;
-    --border-dim: #1e2a38;
-    --gold: #e8a830;
-    --gold-bright: #ffd060;
-    --orange: #e05a10;
-    --orange-bright: #ff7a30;
-    --green: #1a9a50;
-    --green-bright: #30d070;
-    --blue: #1a6aaf;
-    --blue-bright: #40a0e0;
-    --red: #a02020;
-    --red-bright: #e03030;
-    --text-primary: #d0dae8;
-    --text-secondary: #7a9ab8;
-    --text-dim: #4a6070;
-    --text-gold: #e8a830;
-    --text-green: #30d070;
-    --text-orange: #ff7a30;
-    --text-red: #e03030;
-    --text-blue: #40a0e0;
-  }
+:root {
+  --bg0: #080b0f;
+  --bg1: #0d1219;
+  --bg2: #111822;
+  --bg3: #16202e;
+  --bg4: #1c2a3a;
+  --border: #1e2d3f;
+  --border2: #253545;
+  --gold: #d4900a;
+  --gold2: #f0b030;
+  --gold3: #ffd060;
+  --goldglow: rgba(212,144,10,0.18);
+  --green: #0e8a3a;
+  --green2: #18c055;
+  --greenglow: rgba(24,192,85,0.15);
+  --blue: #0e5fa0;
+  --blue2: #2090e0;
+  --blueglow: rgba(32,144,224,0.15);
+  --orange: #c04a08;
+  --orange2: #f07020;
+  --orangeglow: rgba(240,112,32,0.15);
+  --red: #a01818;
+  --red2: #e03030;
+  --redglow: rgba(224,48,48,0.15);
+  --purple: #5a28b0;
+  --purple2: #9060f0;
+  --purpleglow: rgba(144,96,240,0.15);
+  --t1: #ccd8e8;
+  --t2: #7a9ab8;
+  --t3: #3d5570;
+  --t4: #243040;
+  --ff: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-  body {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+body {
+  background: var(--bg0);
+  color: var(--t1);
+  font-family: var(--ff);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
 
-  /* Scanline overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.03) 2px,
-      rgba(0,0,0,0.03) 4px
-    );
-    pointer-events: none;
-    z-index: 9999;
-  }
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--bg1);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-mark {
+  width: 36px; height: 36px;
+  background: var(--bg3);
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px var(--goldglow);
+}
+.logo-name { font-size: 15px; font-weight: 700; color: var(--gold2); letter-spacing: 3px; }
+.logo-sub  { font-size: 8px; color: var(--t3); letter-spacing: 2px; text-transform: uppercase; }
+.topbar-clock {
+  margin-left: auto;
+  text-align: right;
+  font-size: 11px;
+  color: var(--t3);
+  font-variant-numeric: tabular-nums;
+}
+.topbar-clock .time { font-size: 17px; font-weight: 700; color: var(--blue2); letter-spacing: 1px; display: block; }
+.mode-pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+.mode-vs { background: var(--goldglow); border: 1px solid var(--gold); color: var(--gold2); }
+.mode-ar { background: var(--blueglow); border: 1px solid var(--blue2); color: var(--blue2); }
 
-  /* ── HEADER ── */
-  .header {
-    background: linear-gradient(180deg, #0d1420 0%, #0a0c10 100%);
-    border-bottom: 2px solid var(--border-gold);
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
+/* ── SETUP BANNER ── */
+.setup-banner {
+  background: linear-gradient(135deg, var(--bg2), var(--bg3));
+  border-bottom: 2px solid var(--gold);
+  padding: 16px;
+  display: none;
+}
+.setup-banner.show { display: block; }
+.setup-title { font-size: 13px; font-weight: 700; color: var(--gold2); margin-bottom: 4px; }
+.setup-body { font-size: 12px; color: var(--t2); margin-bottom: 12px; }
+.setup-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.setup-label { font-size: 11px; color: var(--t3); min-width: 140px; }
+.setup-input {
+  background: var(--bg4); border: 1px solid var(--border2);
+  color: var(--t1); padding: 6px 10px; border-radius: 4px;
+  font-size: 13px; font-family: var(--ff); outline: none;
+  width: 80px;
+}
+.setup-input:focus { border-color: var(--gold); }
+.btn-primary {
+  background: var(--gold); color: #0a0700;
+  border: none; padding: 7px 16px; border-radius: 4px;
+  font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: 1px;
+}
+.btn-primary:active { opacity: 0.8; }
+.btn-secondary {
+  background: var(--bg4); color: var(--t2);
+  border: 1px solid var(--border2); padding: 7px 14px; border-radius: 4px;
+  font-size: 12px; cursor: pointer;
+}
 
-  .header-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+/* ── MAIN HERO CARD ── */
+.hero-section { padding: 14px 14px 0; }
 
-  .logo-icon {
-    width: 42px;
-    height: 42px;
-    background: linear-gradient(135deg, #1a2230, #0d1420);
-    border: 2px solid var(--border-gold);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-  }
+.hero-card {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.4);
+}
 
-  .logo-text { line-height: 1.1; }
-  .logo-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--gold);
-    letter-spacing: 3px;
-    text-shadow: 0 0 20px rgba(232,168,48,0.4);
-  }
-  .logo-sub {
-    font-size: 9px;
-    color: var(--text-secondary);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
+.hero-header {
+  padding: 10px 16px 8px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.hero-header-label { font-size: 9px; letter-spacing: 2px; color: var(--t3); text-transform: uppercase; }
 
-  .header-time {
-    text-align: right;
-    font-size: 11px;
-    color: var(--text-secondary);
-    letter-spacing: 1px;
-  }
-  .header-time .clock {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-blue);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 2px;
-  }
+.hero-body { padding: 16px; }
 
-  .header-center {
-    text-align: center;
-  }
+/* Current command */
+.command-now {
+  background: var(--bg3);
+  border: 1px solid var(--green);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 0 20px var(--greenglow);
+  position: relative;
+  overflow: hidden;
+}
+.command-now::before {
+  content: '▶ DOE DIT NU';
+  position: absolute; top: 8px; right: 10px;
+  font-size: 8px; font-weight: 700; letter-spacing: 2px;
+  color: var(--green2); opacity: 0.7;
+}
+.cmd-resources { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.cmd-res-tag {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg4); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 5px 12px;
+  font-size: 12px; font-weight: 600; color: var(--t1);
+}
+.cmd-res-tag.highlight {
+  background: var(--greenglow); border-color: var(--green2); color: var(--green2);
+}
+.cmd-res-tag .bonus {
+  font-size: 9px; color: var(--green2); font-weight: 700;
+}
 
-  .mode-badge {
-    display: inline-block;
-    padding: 4px 14px;
-    border-radius: 3px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-  .mode-badge.vs { background: rgba(200,146,42,0.15); border: 1px solid var(--border-gold); color: var(--gold); }
-  .mode-badge.ar { background: rgba(26,106,175,0.15); border: 1px solid var(--border-blue); color: var(--blue-bright); }
+.command-desc {
+  font-size: 13px; color: var(--t1); font-weight: 600; margin-bottom: 4px;
+}
+.command-reason { font-size: 11px; color: var(--t2); line-height: 1.5; }
+.command-reason strong { color: var(--gold2); font-weight: 600; }
 
-  /* ── STATUS BAR ── */
-  .status-bar {
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-dim);
-    padding: 10px 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 10px;
-  }
+/* Value lost bar */
+.value-bar-wrap { margin-top: 12px; }
+.value-bar-label {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--t3); margin-bottom: 4px;
+}
+.value-bar-track {
+  height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden;
+}
+.value-bar-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.8s ease;
+}
+.value-bar-fill.green { background: linear-gradient(90deg, var(--green), var(--green2)); }
+.value-bar-fill.orange { background: linear-gradient(90deg, var(--orange), var(--orange2)); }
+.value-bar-fill.red { background: linear-gradient(90deg, var(--red), var(--red2)); }
 
-  .status-cell {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    padding: 8px 12px;
-    background: var(--bg-panel);
-    border: 1px solid var(--border-dim);
-    border-radius: 4px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
+/* Save / Delay / Avoid mini cards */
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.mini-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 6px; padding: 10px 10px;
+}
+.mini-card-header {
+  font-size: 9px; font-weight: 700; letter-spacing: 2px; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 5px;
+}
+.mini-card.save .mini-card-header   { color: var(--blue2); }
+.mini-card.delay .mini-card-header  { color: var(--gold2); }
+.mini-card.avoid .mini-card-header  { color: var(--red2); }
+.mini-res { font-size: 11px; color: var(--t2); padding: 3px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 5px; }
+.mini-res:last-child { border-bottom: none; }
+.mini-res .why { font-size: 9px; color: var(--t4); display: block; }
 
-  .status-cell::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-  }
-  .status-cell.gold::before { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
-  .status-cell.blue::before { background: linear-gradient(90deg, transparent, var(--blue-bright), transparent); }
-  .status-cell.green::before { background: linear-gradient(90deg, transparent, var(--green-bright), transparent); }
-  .status-cell.orange::before { background: linear-gradient(90deg, transparent, var(--orange-bright), transparent); }
+/* ── STATUS STRIP ── */
+.status-strip {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 0 14px 14px;
+}
+@media (min-width: 500px) { .status-strip { grid-template-columns: repeat(4, 1fr); } }
 
-  .status-label {
-    font-size: 9px;
-    color: var(--text-dim);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-  }
-  .status-value {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text-primary);
-  }
-  .status-value.gold { color: var(--gold); }
-  .status-value.blue { color: var(--blue-bright); }
-  .status-value.green { color: var(--green-bright); }
-  .status-value.orange { color: var(--orange-bright); }
-  .status-sub {
-    font-size: 10px;
-    color: var(--text-secondary);
-    font-variant-numeric: tabular-nums;
-  }
+.stat-cell {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px;
+  position: relative; overflow: hidden;
+}
+.stat-cell::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.stat-cell.gold::after  { background: linear-gradient(90deg, transparent, var(--gold2), transparent); }
+.stat-cell.blue::after  { background: linear-gradient(90deg, transparent, var(--blue2), transparent); }
+.stat-cell.green::after { background: linear-gradient(90deg, transparent, var(--green2), transparent); }
+.stat-cell.purple::after{ background: linear-gradient(90deg, transparent, var(--purple2), transparent); }
+.stat-label { font-size: 9px; letter-spacing: 1.5px; color: var(--t3); text-transform: uppercase; margin-bottom: 3px; }
+.stat-value { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat-value.gold   { color: var(--gold2); }
+.stat-value.blue   { color: var(--blue2); }
+.stat-value.green  { color: var(--green2); }
+.stat-value.purple { color: var(--purple2); }
+.stat-sub { font-size: 10px; color: var(--t3); margin-top: 1px; }
 
-  /* ── MAIN LAYOUT ── */
-  .main {
-    padding: 16px 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
+/* Countdown progress */
+.stat-progress { margin-top: 5px; height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
+.stat-progress-fill { height: 100%; border-radius: 2px; background: var(--blue2); transition: width 1s linear; }
 
-  /* ── ALERT BANNER ── */
-  .alert-banner {
-    background: linear-gradient(135deg, rgba(160,32,32,0.15), rgba(224,48,48,0.08));
-    border: 1px solid rgba(224,48,48,0.4);
-    border-left: 4px solid var(--red-bright);
-    border-radius: 4px;
-    padding: 12px 16px;
-    margin-bottom: 16px;
-    display: none;
-    align-items: center;
-    gap: 12px;
-  }
-  .alert-banner.visible { display: flex; }
-  .alert-icon { font-size: 20px; }
-  .alert-text { flex: 1; }
-  .alert-title { font-size: 13px; font-weight: 700; color: var(--red-bright); }
-  .alert-body { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
-  .alert-value { text-align: right; }
-  .alert-loss { font-size: 16px; font-weight: 700; color: var(--red-bright); }
-  .alert-gain { font-size: 11px; color: var(--green-bright); }
+/* ── SECTION ── */
+.section { padding: 0 14px 16px; }
+.section-head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px;
+}
+.section-head-title { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: var(--t3); text-transform: uppercase; white-space: nowrap; }
+.section-head-line { flex: 1; height: 1px; background: var(--border); }
 
-  /* ── SECTION HEADER ── */
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-    margin-top: 20px;
-  }
-  .section-line {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--border-dim), transparent);
-  }
-  .section-title {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    white-space: nowrap;
-  }
+/* ── VS WEEK BAR ── */
+.vs-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.vs-day {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 8px 4px 6px;
+  text-align: center; position: relative;
+}
+.vs-day.active { border-color: var(--gold); background: var(--bg3); box-shadow: 0 0 12px var(--goldglow); }
+.vs-day.past   { opacity: 0.35; }
+.vs-day.sunday { border-color: var(--blue); opacity: 0.5; }
+.vs-day-name { font-size: 8px; color: var(--t3); letter-spacing: 1px; margin-bottom: 3px; }
+.vs-day-emoji { font-size: 15px; line-height: 1; margin-bottom: 2px; }
+.vs-day-short { font-size: 8px; font-weight: 700; color: var(--t2); }
+.vs-day.active .vs-day-short { color: var(--gold2); }
+.vs-day-pts   { font-size: 8px; color: var(--t4); }
+.vs-dot {
+  position: absolute; top: 3px; right: 3px;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--gold2); box-shadow: 0 0 5px var(--gold2);
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
-  /* ── COMMAND GRID ── */
-  .command-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 12px;
-    margin-bottom: 16px;
-  }
+/* ── AR PHASE TIMELINE ── */
+.ar-timeline { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px; }
+.ar-seg {
+  flex: 1; min-width: 70px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 8px 6px; text-align: center;
+  position: relative;
+}
+.ar-seg.current { border-color: var(--blue2); background: var(--bg3); box-shadow: 0 0 12px var(--blueglow); }
+.ar-seg.next    { border-color: var(--border2); opacity: 0.7; }
+.ar-seg.overlap { border-color: var(--gold); box-shadow: 0 0 12px var(--goldglow); }
+.ar-seg-now { position: absolute; top: -7px; left: 50%; transform: translateX(-50%); font-size: 7px; font-weight: 700; letter-spacing: 1px; color: var(--blue2); background: var(--bg0); padding: 0 4px; white-space: nowrap; }
+.ar-seg-overlap-label { position: absolute; top: -7px; left: 50%; transform: translateX(-50%); font-size: 7px; font-weight: 700; letter-spacing: 1px; color: var(--gold2); background: var(--bg0); padding: 0 4px; white-space: nowrap; }
+.ar-seg-emoji { font-size: 16px; display: block; margin-bottom: 3px; }
+.ar-seg-name  { font-size: 8px; font-weight: 600; color: var(--t2); display: block; }
+.ar-seg.current .ar-seg-name { color: var(--blue2); }
+.ar-seg.overlap .ar-seg-name { color: var(--gold2); }
+.ar-seg-time  { font-size: 8px; color: var(--t4); display: block; margin-top: 2px; }
 
-  /* ── COMMAND PANEL ── */
-  .cmd-panel {
-    background: var(--bg-panel);
-    border: 1px solid var(--border-dim);
-    border-radius: 6px;
-    overflow: hidden;
-    position: relative;
-  }
-  .cmd-panel::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-  }
-  .cmd-panel.spend::before { background: linear-gradient(90deg, transparent, var(--green-bright), transparent); }
-  .cmd-panel.save::before  { background: linear-gradient(90deg, transparent, var(--blue-bright), transparent); }
-  .cmd-panel.delay::before { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
-  .cmd-panel.avoid::before { background: linear-gradient(90deg, transparent, var(--red-bright), transparent); }
+/* ── UPCOMING WINDOWS ── */
+.windows-list { display: flex; flex-direction: column; gap: 8px; }
+.window-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px;
+  display: flex; align-items: center; gap: 12px;
+}
+.window-card.perfect { border-color: var(--gold); background: var(--bg3); }
+.window-card.good    { border-color: var(--green); }
+.window-left { flex: 1; }
+.window-when { font-size: 9px; color: var(--t3); letter-spacing: 1px; margin-bottom: 3px; }
+.window-title { font-size: 13px; font-weight: 700; color: var(--t1); }
+.window-ar { font-size: 11px; color: var(--t2); margin-top: 2px; }
+.window-resources { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+.win-tag {
+  font-size: 9px; padding: 2px 7px; border-radius: 10px;
+  background: var(--bg4); border: 1px solid var(--border); color: var(--t3);
+}
+.win-tag.highlight { background: var(--goldglow); border-color: var(--gold); color: var(--gold2); }
+.window-right { text-align: right; flex-shrink: 0; }
+.window-countdown { font-size: 16px; font-weight: 700; color: var(--gold2); font-variant-numeric: tabular-nums; }
+.window-card.perfect .window-countdown { color: var(--gold3); }
+.window-badge {
+  display: inline-block; margin-top: 4px;
+  font-size: 8px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border-radius: 10px;
+}
+.badge-perfect { background: var(--goldglow); border: 1px solid var(--gold); color: var(--gold2); }
+.badge-good    { background: var(--greenglow); border: 1px solid var(--green2); color: var(--green2); }
+.badge-low     { background: var(--bg4); border: 1px solid var(--border); color: var(--t4); }
 
-  .cmd-header {
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-bottom: 1px solid var(--border-dim);
-  }
-  .cmd-header.spend { background: rgba(26,154,80,0.08); }
-  .cmd-header.save  { background: rgba(26,106,175,0.08); }
-  .cmd-header.delay { background: rgba(200,146,42,0.08); }
-  .cmd-header.avoid { background: rgba(160,32,32,0.08); }
+/* ── OVERLAP TABLE ── */
+.overlap-table-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.overlap-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.overlap-table th { padding: 8px 10px; text-align: left; font-size: 8px; letter-spacing: 1.5px; color: var(--t4); border-bottom: 1px solid var(--border); white-space: nowrap; text-transform: uppercase; }
+.overlap-table td { padding: 7px 10px; border-bottom: 1px solid rgba(30,45,63,0.5); vertical-align: middle; }
+.overlap-table tr:last-child td { border-bottom: none; }
+.overlap-table tr.today-row td { background: rgba(212,144,10,0.04); }
+.ar-tag {
+  display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 9px; font-weight: 600; white-space: nowrap;
+}
+.t-build  { background: rgba(32,144,224,0.1); color: var(--blue2); border: 1px solid rgba(32,144,224,0.2); }
+.t-unit   { background: rgba(240,112,32,0.1); color: var(--orange2); border: 1px solid rgba(240,112,32,0.2); }
+.t-tech   { background: rgba(24,192,85,0.1); color: var(--green2); border: 1px solid rgba(24,192,85,0.2); }
+.t-drone  { background: rgba(144,96,240,0.1); color: var(--purple2); border: 1px solid rgba(144,96,240,0.2); }
+.t-hero   { background: rgba(212,144,10,0.1); color: var(--gold2); border: 1px solid rgba(212,144,10,0.2); }
+.day-cell { font-weight: 600; color: var(--t1); }
+.day-cell.today { color: var(--gold2); }
+.ol-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 8px; font-weight: 700; letter-spacing: 1px; }
 
-  .cmd-icon { font-size: 20px; }
-  .cmd-label { flex: 1; }
-  .cmd-title {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-  .cmd-title.spend { color: var(--green-bright); }
-  .cmd-title.save  { color: var(--blue-bright); }
-  .cmd-title.delay { color: var(--gold); }
-  .cmd-title.avoid { color: var(--red-bright); }
-  .cmd-score {
-    font-size: 11px;
-    color: var(--text-dim);
-  }
+/* ── CALIBRATE MODAL ── */
+.calibrate-bar {
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  padding: 8px 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.calibrate-bar label { font-size: 10px; color: var(--t3); }
+.calibrate-select, .calibrate-phase-btn {
+  background: var(--bg4); border: 1px solid var(--border2);
+  color: var(--t1); padding: 5px 8px; border-radius: 4px;
+  font-size: 11px; font-family: var(--ff); cursor: pointer; outline: none;
+}
+.calibrate-select:focus { border-color: var(--blue2); }
+.calibrate-phase-btn:hover { border-color: var(--blue2); color: var(--blue2); }
+.calibrate-phase-btn.active { border-color: var(--blue2); color: var(--blue2); background: var(--blueglow); }
 
-  .cmd-items { padding: 8px; }
+/* ── NOTIFICATION BTN ── */
+.notif-btn {
+  background: var(--bg4); border: 1px solid var(--border2); color: var(--t2);
+  padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;
+  display: flex; align-items: center; gap: 5px; white-space: nowrap;
+}
+.notif-btn.on { border-color: var(--green2); color: var(--green2); background: var(--greenglow); }
 
-  .resource-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    border-radius: 4px;
-    margin-bottom: 4px;
-    border: 1px solid transparent;
-    cursor: default;
-    transition: background 0.15s;
-  }
-  .resource-item:last-child { margin-bottom: 0; }
-  .resource-item:hover { background: rgba(255,255,255,0.03); }
-  .resource-item.spend { border-color: rgba(48,208,112,0.12); background: rgba(48,208,112,0.04); }
-  .resource-item.save  { border-color: rgba(64,160,224,0.12); background: rgba(64,160,224,0.04); }
-  .resource-item.delay { border-color: rgba(232,168,48,0.12); background: rgba(232,168,48,0.04); }
-  .resource-item.avoid { border-color: rgba(224,48,48,0.12); background: rgba(224,48,48,0.04); }
+/* ── ALERT ── */
+.alert-strip {
+  margin: 0 14px 12px;
+  background: rgba(160,24,24,0.12); border: 1px solid rgba(224,48,48,0.35);
+  border-left: 3px solid var(--red2); border-radius: 6px;
+  padding: 10px 14px; display: none; align-items: center; gap: 12px;
+}
+.alert-strip.show { display: flex; }
+.alert-text { flex: 1; font-size: 12px; color: var(--t2); }
+.alert-text strong { color: var(--red2); font-weight: 600; }
+.alert-action { font-size: 11px; color: var(--green2); white-space: nowrap; }
 
-  .res-emoji { font-size: 16px; width: 24px; text-align: center; }
-  .res-info { flex: 1; }
-  .res-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
-  .res-reason { font-size: 10px; color: var(--text-secondary); margin-top: 1px; }
-  .res-score {
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 10px;
-  }
-  .res-score.spend { background: rgba(48,208,112,0.15); color: var(--green-bright); }
-  .res-score.save  { background: rgba(64,160,224,0.15); color: var(--blue-bright); }
-  .res-score.delay { background: rgba(232,168,48,0.15); color: var(--gold); }
-  .res-score.avoid { background: rgba(224,48,48,0.15); color: var(--red-bright); }
+/* ── FOOTER ── */
+.footer {
+  padding: 16px 14px; border-top: 1px solid var(--border);
+  font-size: 9px; color: var(--t4); letter-spacing: 1px; text-align: center;
+}
 
-  /* ── TIMELINE ── */
-  .timeline-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 10px;
-  }
-
-  .timeline-card {
-    background: var(--bg-panel);
-    border: 1px solid var(--border-dim);
-    border-radius: 6px;
-    padding: 12px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .timeline-card.priority-high {
-    border-color: rgba(200,146,42,0.4);
-    background: linear-gradient(135deg, rgba(200,146,42,0.06), var(--bg-panel));
-  }
-
-  .timeline-card.priority-medium {
-    border-color: rgba(26,106,175,0.4);
-  }
-
-  .timeline-card.priority-low {
-    opacity: 0.7;
-  }
-
-  .tl-when {
-    font-size: 9px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 4px;
-  }
-  .tl-event {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 2px;
-  }
-  .tl-overlap {
-    font-size: 10px;
-    color: var(--gold);
-    margin-bottom: 6px;
-  }
-  .tl-resources {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-  .tl-tag {
-    font-size: 9px;
-    padding: 2px 6px;
-    border-radius: 3px;
-    background: rgba(255,255,255,0.05);
-    color: var(--text-secondary);
-    border: 1px solid var(--border-dim);
-  }
-  .tl-tag.highlight {
-    background: rgba(200,146,42,0.12);
-    color: var(--gold);
-    border-color: rgba(200,146,42,0.3);
-  }
-  .tl-countdown {
-    margin-top: 8px;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--gold-bright);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 1px;
-  }
-  .tl-value {
-    margin-top: 4px;
-    font-size: 10px;
-    color: var(--green-bright);
-  }
-
-  /* ── OVERLAP MATRIX ── */
-  .overlap-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 11px;
-  }
-  .overlap-table th {
-    padding: 8px 10px;
-    text-align: left;
-    font-size: 9px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    border-bottom: 1px solid var(--border-dim);
-    white-space: nowrap;
-  }
-  .overlap-table td {
-    padding: 7px 10px;
-    border-bottom: 1px solid rgba(30,42,56,0.5);
-    vertical-align: middle;
-  }
-  .overlap-table tr:last-child td { border-bottom: none; }
-  .overlap-table tr.current-row td {
-    background: rgba(200,146,42,0.05);
-  }
-  .overlap-table tr:hover td {
-    background: rgba(255,255,255,0.02);
-  }
-
-  .day-label {
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-  .day-label.today { color: var(--gold); }
-  .ar-phase-tag {
-    display: inline-block;
-    padding: 2px 7px;
-    border-radius: 3px;
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    white-space: nowrap;
-  }
-  .ar-tag-build  { background: rgba(64,160,224,0.12); color: var(--blue-bright); border: 1px solid rgba(64,160,224,0.25); }
-  .ar-tag-unit   { background: rgba(224,90,16,0.12); color: var(--orange-bright); border: 1px solid rgba(224,90,16,0.25); }
-  .ar-tag-tech   { background: rgba(48,208,112,0.12); color: var(--green-bright); border: 1px solid rgba(48,208,112,0.25); }
-  .ar-tag-drone  { background: rgba(160,100,220,0.12); color: #c080ff; border: 1px solid rgba(160,100,220,0.25); }
-  .ar-tag-hero   { background: rgba(232,168,48,0.12); color: var(--gold); border: 1px solid rgba(232,168,48,0.25); }
-
-  .overlap-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .overlap-perfect { background: rgba(232,168,48,0.2); color: var(--gold-bright); border: 1px solid rgba(232,168,48,0.4); }
-  .overlap-good    { background: rgba(48,208,112,0.15); color: var(--green-bright); border: 1px solid rgba(48,208,112,0.3); }
-  .overlap-none    { background: rgba(74,96,112,0.1); color: var(--text-dim); border: 1px solid rgba(74,96,112,0.2); }
-
-  /* ── VS PROGRESS BAR ── */
-  .vs-week {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 16px;
-  }
-  .vs-day-block {
-    flex: 1;
-    background: var(--bg-panel);
-    border: 1px solid var(--border-dim);
-    border-radius: 4px;
-    padding: 8px 6px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.1s;
-  }
-  .vs-day-block.active {
-    border-color: var(--border-gold);
-    background: linear-gradient(135deg, rgba(200,146,42,0.12), var(--bg-panel));
-  }
-  .vs-day-block.past {
-    opacity: 0.45;
-  }
-  .vs-day-block.sunday {
-    border-color: var(--border-blue);
-    opacity: 0.6;
-  }
-  .vsd-day { font-size: 9px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 2px; }
-  .vsd-name { font-size: 9px; font-weight: 700; color: var(--text-secondary); }
-  .vsd-name.active { color: var(--gold); }
-  .vsd-emoji { font-size: 14px; margin-bottom: 2px; }
-  .vsd-pts { font-size: 9px; color: var(--text-dim); }
-  .vsd-active-dot {
-    position: absolute;
-    top: 4px; right: 4px;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--gold);
-    box-shadow: 0 0 6px var(--gold);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  /* ── AR PHASE BAR ── */
-  .ar-phase-bar {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 16px;
-    align-items: stretch;
-  }
-  .ar-phase-seg {
-    flex: 1;
-    padding: 10px 6px;
-    border-radius: 4px;
-    text-align: center;
-    border: 1px solid var(--border-dim);
-    background: var(--bg-panel);
-    position: relative;
-    font-size: 9px;
-    color: var(--text-dim);
-    transition: all 0.2s;
-  }
-  .ar-phase-seg.current {
-    border-color: rgba(64,160,224,0.5);
-    background: rgba(26,106,175,0.12);
-  }
-  .ar-phase-seg.next {
-    border-color: rgba(64,160,224,0.25);
-    opacity: 0.7;
-  }
-  .ar-phase-emoji { font-size: 14px; display: block; margin-bottom: 3px; }
-  .ar-phase-name { font-weight: 600; display: block; font-size: 8px; letter-spacing: 0.5px; color: var(--text-secondary); }
-  .ar-phase-time { font-size: 8px; color: var(--text-dim); display: block; margin-top: 2px; }
-  .ar-phase-seg.current .ar-phase-name { color: var(--blue-bright); }
-  .ar-phase-current-label {
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 7px;
-    font-weight: 700;
-    color: var(--blue-bright);
-    letter-spacing: 1px;
-    white-space: nowrap;
-    background: var(--bg-primary);
-    padding: 0 4px;
-  }
-
-  /* ── BOTTOM NOTICE ── */
-  .bottom-notice {
-    text-align: center;
-    padding: 24px;
-    color: var(--text-dim);
-    font-size: 10px;
-    letter-spacing: 1px;
-    border-top: 1px solid var(--border-dim);
-    margin-top: 24px;
-  }
-
-  /* ── TIMEZONE CONFIG ── */
-  .config-bar {
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-dim);
-    padding: 6px 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-size: 10px;
-    color: var(--text-dim);
-    flex-wrap: wrap;
-  }
-  .config-bar label { color: var(--text-secondary); }
-  .config-bar select, .config-bar input {
-    background: var(--bg-panel);
-    border: 1px solid var(--border-dim);
-    color: var(--text-primary);
-    padding: 3px 8px;
-    border-radius: 3px;
-    font-size: 10px;
-    outline: none;
-  }
-  .config-bar select:focus, .config-bar input:focus {
-    border-color: var(--border-blue);
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 600px) {
-    .header { flex-wrap: wrap; gap: 8px; }
-    .vs-week { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-    .ar-phase-bar { flex-wrap: wrap; }
-    .ar-phase-seg { min-width: 80px; }
-  }
-
-  /* ── FLICKER ANIM ── */
-  @keyframes flicker {
-    0%, 95%, 100% { opacity: 1; }
-    96% { opacity: 0.8; }
-  }
-
-  .logo-title { animation: flicker 8s infinite; }
-
-  /* ── PROGRESS BAR ── */
-  .progress-bar-wrap {
-    height: 4px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-top: 6px;
-  }
-  .progress-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    transition: width 1s linear;
-  }
-  .progress-bar-fill.blue { background: linear-gradient(90deg, var(--blue), var(--blue-bright)); }
-  .progress-bar-fill.gold { background: linear-gradient(90deg, #8a5c10, var(--gold)); }
-
-  /* ── EFFICIENCY METER ── */
-  .efficiency-ring {
-    width: 80px;
-    height: 80px;
-    position: relative;
-    margin: 0 auto;
-  }
-  .efficiency-ring svg {
-    transform: rotate(-90deg);
-  }
-  .efficiency-label {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-  .efficiency-pct {
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1;
-  }
-  .efficiency-sub {
-    font-size: 7px;
-    color: var(--text-dim);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  .metrics-row {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
-  .metric-block {
-    flex: 1;
-    text-align: center;
-  }
-  .metric-val {
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-  }
-  .metric-lab {
-    font-size: 8px;
-    color: var(--text-dim);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin-top: 3px;
-  }
+/* Mobile adjustments */
+@media (max-width: 400px) {
+  .mini-grid { grid-template-columns: 1fr; }
+  .vs-day-emoji { font-size: 12px; }
+  .vs-day-short { font-size: 7px; }
+}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════ -->
-<!--  HEADER                                        -->
-<!-- ══════════════════════════════════════════════ -->
-<header class="header">
-  <div class="header-logo">
-    <div class="logo-icon">⚔️</div>
-    <div class="logo-text">
-      <div class="logo-title">O R C</div>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark">⚔️</div>
+    <div>
+      <div class="logo-name">O R C</div>
       <div class="logo-sub">Optimization Resource Commander</div>
     </div>
   </div>
-  <div class="header-center">
-    <span class="mode-badge vs" id="modeBadge">VS MODE ACTIVE</span>
+  <span class="mode-pill mode-vs" id="modePill">VS ACTIVE</span>
+  <div class="topbar-clock">
+    <span class="time" id="clockEl">00:00:00</span>
+    <span id="dateEl" style="font-size:9px;color:var(--t4)">—</span>
   </div>
-  <div class="header-time">
-    <div class="clock" id="clockDisplay">00:00:00</div>
-    <div id="dateDisplay" style="font-size:10px;color:var(--text-dim);">–</div>
-    <div id="serverTimeDisplay" style="font-size:9px;color:var(--text-dim);">SERVER –</div>
-  </div>
-</header>
-
-<!-- ══════════════════════════════════════════════ -->
-<!--  CONFIG BAR                                    -->
-<!-- ══════════════════════════════════════════════ -->
-<div class="config-bar">
-  <span>⚙️ CONFIG</span>
-  <label>Server UTC offset:
-    <select id="serverOffset">
-      <option value="-12">UTC-12</option>
-      <option value="-11">UTC-11</option>
-      <option value="-10">UTC-10</option>
-      <option value="-9">UTC-9</option>
-      <option value="-8">UTC-8 (PST)</option>
-      <option value="-7">UTC-7 (MST)</option>
-      <option value="-6">UTC-6 (CST)</option>
-      <option value="-5" selected>UTC-5 (EST) ✓</option>
-      <option value="-4">UTC-4</option>
-      <option value="-3">UTC-3</option>
-      <option value="-2">UTC-2</option>
-      <option value="-1">UTC-1</option>
-      <option value="0">UTC+0</option>
-      <option value="1">UTC+1 (CET)</option>
-      <option value="2">UTC+2 (EET)</option>
-      <option value="3">UTC+3</option>
-      <option value="4">UTC+4</option>
-      <option value="5">UTC+5</option>
-      <option value="6">UTC+6</option>
-      <option value="7">UTC+7</option>
-      <option value="8">UTC+8 (SGT/PHT/CST)</option>
-      <option value="9">UTC+9 (JST/KST)</option>
-      <option value="10">UTC+10 (AEST)</option>
-      <option value="11">UTC+11</option>
-      <option value="12">UTC+12</option>
-    </select>
-  </label>
-  <label>Server reset = 2:00 AM server time &nbsp;|&nbsp; Reset at local: <span id="localResetTime" style="color:var(--gold)">–</span></label>
-  <label style="margin-left:auto; color:var(--text-dim)">v1.0 · Data validated Jun 2026</label>
 </div>
 
-<!-- ══════════════════════════════════════════════ -->
-<!--  STATUS BAR                                    -->
-<!-- ══════════════════════════════════════════════ -->
-<div class="status-bar">
-  <div class="status-cell gold">
-    <div class="status-label">VS Day</div>
-    <div class="status-value gold" id="vsDay">–</div>
-    <div class="status-sub" id="vsDayName">–</div>
+<!-- SETUP BANNER (shown first time) -->
+<div class="setup-banner show" id="setupBanner">
+  <div class="setup-title">⚙️ Eenmalige instelling — kalibreer jouw server</div>
+  <div class="setup-body">Vul de tijd in die jouw spel nu toont als "server tijd". ORC berekent de offset automatisch.</div>
+  <div class="setup-row">
+    <span class="setup-label">Server time nu (HH:MM):</span>
+    <input type="text" class="setup-input" id="serverTimeInput" placeholder="bv. 14:30" maxlength="5">
+    <button class="btn-primary" onclick="calibrateFromInput()">Kalibreer ✓</button>
+    <button class="btn-secondary" onclick="document.getElementById('setupBanner').classList.remove('show'); saveSettings()">Sla over — reset = 4:00 AM lokaal</button>
   </div>
-  <div class="status-cell blue">
-    <div class="status-label">Arms Race Phase</div>
-    <div class="status-value blue" id="arPhase">–</div>
-    <div class="status-sub" id="arPhaseTime">–</div>
-  </div>
-  <div class="status-cell green">
-    <div class="status-label">Block Ends In</div>
-    <div class="status-value green" id="blockCountdown" style="font-variant-numeric:tabular-nums">–</div>
-    <div class="status-sub">
-      <div class="progress-bar-wrap" style="width:100px;margin:0 auto">
-        <div class="progress-bar-fill blue" id="blockProgress" style="width:0%"></div>
+</div>
+
+<!-- CALIBRATE BAR -->
+<div class="calibrate-bar">
+  <label>Server UTC:</label>
+  <select class="calibrate-select" id="offsetSelect" onchange="saveSettings(); fullRender();">
+    <option value="-12">UTC−12</option><option value="-11">UTC−11</option>
+    <option value="-10">UTC−10</option><option value="-9">UTC−9</option>
+    <option value="-8">UTC−8 PST</option><option value="-7">UTC−7 MST</option>
+    <option value="-6">UTC−6 CST</option><option value="-5">UTC−5 EST</option>
+    <option value="-4">UTC−4</option><option value="-3">UTC−3</option>
+    <option value="-2">UTC−2</option><option value="-1">UTC−1</option>
+    <option value="0" selected>UTC+0</option>
+    <option value="1">UTC+1 CET</option><option value="2">UTC+2 EET</option>
+    <option value="3">UTC+3</option><option value="4">UTC+4</option>
+    <option value="5">UTC+5</option><option value="6">UTC+6</option>
+    <option value="7">UTC+7</option><option value="8">UTC+8 SGT</option>
+    <option value="9">UTC+9 JST</option><option value="10">UTC+10 AEST</option>
+    <option value="11">UTC+11</option><option value="12">UTC+12</option>
+  </select>
+  <label style="margin-left:8px">AR fase override:</label>
+  <select class="calibrate-select" id="arOverride" onchange="saveSettings(); fullRender();">
+    <option value="">Auto (schema)</option>
+    <option value="CITY">🏗️ City Building</option>
+    <option value="UNIT">⚔️ Unit Progression</option>
+    <option value="TECH">🔬 Tech Research</option>
+    <option value="DRONE">🚁 Drone Boost</option>
+    <option value="HERO">🦸 Hero Advancement</option>
+  </select>
+  <button class="notif-btn" id="notifBtn" onclick="toggleNotifications()">🔔 Meldingen uit</button>
+  <span style="margin-left:auto;font-size:9px;color:var(--t4)">Reset lokaal: <strong id="resetTimeLocal" style="color:var(--gold2)">04:00</strong></span>
+</div>
+
+<!-- ALERT STRIP -->
+<div class="alert-strip" id="alertStrip">
+  <span style="font-size:16px">⚠️</span>
+  <div class="alert-text" id="alertText">—</div>
+  <div class="alert-action" id="alertAction">—</div>
+</div>
+
+<!-- HERO SECTION -->
+<div class="hero-section">
+  <div class="hero-card">
+    <div class="hero-header">
+      <span style="font-size:11px;color:var(--t3);letter-spacing:2px;text-transform:uppercase" id="heroHeaderLabel">COMMAND STATUS</span>
+      <span style="margin-left:auto;font-size:10px;color:var(--t3)" id="heroHeaderSub">—</span>
+    </div>
+    <div class="hero-body">
+
+      <!-- NOW command -->
+      <div class="command-now" id="commandNow">
+        <div class="command-desc" id="commandDesc">Laden...</div>
+        <div class="command-reason" id="commandReason">—</div>
+        <div class="cmd-resources" id="cmdResources"></div>
+        <div class="value-bar-wrap">
+          <div class="value-bar-label">
+            <span>Efficiëntie nu</span>
+            <span id="effNow">—</span>
+          </div>
+          <div class="value-bar-track">
+            <div class="value-bar-fill green" id="effBar" style="width:0%"></div>
+          </div>
+        </div>
       </div>
+
+      <!-- SAVE / DELAY / AVOID -->
+      <div class="mini-grid" id="miniGrid"></div>
+
     </div>
-  </div>
-  <div class="status-cell blue">
-    <div class="status-label">Next AR Phase</div>
-    <div class="status-value blue" id="nextArPhase">–</div>
-    <div class="status-sub" id="nextArPhaseTime">–</div>
-  </div>
-  <div class="status-cell gold">
-    <div class="status-label">Next Best Window</div>
-    <div class="status-value gold" id="nextBestWindow">–</div>
-    <div class="status-sub" id="nextBestWindowTime">–</div>
-  </div>
-  <div class="status-cell orange">
-    <div class="status-label">Efficiency Score</div>
-    <div class="status-value orange" id="efficiencyScore">–</div>
-    <div class="status-sub" id="efficiencySub">–</div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════ -->
-<!--  MAIN                                          -->
-<!-- ══════════════════════════════════════════════ -->
-<div class="main">
-
-  <!-- ALERT -->
-  <div class="alert-banner" id="alertBanner">
-    <div class="alert-icon">⚠️</div>
-    <div class="alert-text">
-      <div class="alert-title" id="alertTitle">Sub-optimal spending window detected</div>
-      <div class="alert-body" id="alertBody">–</div>
-    </div>
-    <div class="alert-value">
-      <div class="alert-loss" id="alertLoss">–30%</div>
-      <div class="alert-gain" id="alertGain">+30% in 2h 15m</div>
-    </div>
+<!-- STATUS STRIP -->
+<div class="status-strip">
+  <div class="stat-cell gold">
+    <div class="stat-label">VS Dag</div>
+    <div class="stat-value gold" id="statVsDay">—</div>
+    <div class="stat-sub" id="statVsName">—</div>
   </div>
+  <div class="stat-cell blue">
+    <div class="stat-label">AR Fase nu</div>
+    <div class="stat-value blue" id="statArPhase">—</div>
+    <div class="stat-sub" id="statArSub">—</div>
+  </div>
+  <div class="stat-cell green">
+    <div class="stat-label">Fase eindigt in</div>
+    <div class="stat-value green" id="statCountdown" style="font-size:15px;letter-spacing:1px">—</div>
+    <div class="stat-progress"><div class="stat-progress-fill" id="statProgress" style="width:0%"></div></div>
+  </div>
+  <div class="stat-cell purple">
+    <div class="stat-label">Volgend venster</div>
+    <div class="stat-value purple" id="statNextWindow">—</div>
+    <div class="stat-sub" id="statNextSub">—</div>
+  </div>
+</div>
 
-  <!-- VS WEEK PROGRESS -->
-  <div class="section-header">
-    <div class="section-title">Alliance Duel VS — Week Progress</div>
-    <div class="section-line"></div>
+<!-- VS WEEK -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-head-title">Alliance Duel VS — Week</div>
+    <div class="section-head-line"></div>
   </div>
   <div class="vs-week" id="vsWeek"></div>
+</div>
 
-  <!-- AR PHASE TIMELINE TODAY -->
-  <div class="section-header">
-    <div class="section-title">Arms Race — Today's Phase Timeline</div>
-    <div class="section-line"></div>
+<!-- AR TIMELINE -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-head-title">Arms Race — Vandaag</div>
+    <div class="section-head-line"></div>
   </div>
-  <div class="ar-phase-bar" id="arPhaseBar"></div>
+  <div class="ar-timeline" id="arTimeline"></div>
+</div>
 
-  <!-- COMMAND PANELS -->
-  <div class="section-header">
-    <div class="section-title">Resource Command Orders</div>
-    <div class="section-line"></div>
+<!-- UPCOMING WINDOWS -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-head-title">Komende optimale vensters — 72u</div>
+    <div class="section-head-line"></div>
   </div>
-  <div class="command-grid" id="commandGrid">
-    <!-- filled by JS -->
-  </div>
+  <div class="windows-list" id="windowsList"></div>
+</div>
 
-  <!-- UPCOMING WINDOWS -->
-  <div class="section-header">
-    <div class="section-title">Upcoming Optimal Windows — Next 72 Hours</div>
-    <div class="section-line"></div>
+<!-- OVERLAP TABLE -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-head-title">VS × AR Overlap Matrix</div>
+    <div class="section-head-line"></div>
   </div>
-  <div class="timeline-grid" id="timelineGrid">
-    <!-- filled by JS -->
-  </div>
-
-  <!-- FULL WEEK OVERLAP TABLE -->
-  <div class="section-header">
-    <div class="section-title">VS × Arms Race Overlap Matrix</div>
-    <div class="section-line"></div>
-  </div>
-  <div style="background:var(--bg-panel);border:1px solid var(--border-dim);border-radius:6px;overflow:hidden;">
-    <table class="overlap-table" id="overlapTable">
+  <div class="overlap-table-wrap">
+    <table class="overlap-table">
       <thead>
         <tr>
-          <th>Day</th>
-          <th>VS Theme</th>
-          <th>AR Phase (6AM–10AM)</th>
-          <th>AR Phase (2PM–6PM)</th>
-          <th>AR Phase (10PM–2AM)</th>
-          <th>Overlap Quality</th>
-          <th>Best Resource</th>
+          <th>Dag</th><th>VS Thema</th>
+          <th>06–10</th><th>14–18</th><th>22–02</th>
+          <th>Overlap</th><th>Beste resource</th>
         </tr>
       </thead>
       <tbody id="overlapBody"></tbody>
     </table>
   </div>
-
 </div>
 
-<div class="bottom-notice">
-  ORC v1.0 · Optimization Resource Commander · Last War: Survival · Data sourced from community guides (lastwartutorial.com, csmit195.com, lastwarnexus.net) · Independent fan tool · Not affiliated with Last War developers
-</div>
+<div class="footer">ORC v2.0 · Last War: Survival · Data: lastwartutorial.com, csmit195.com · Niet gelieerd aan Last War ontwikkelaars</div>
 
-<!-- ══════════════════════════════════════════════ -->
-<!--  ENGINE                                        -->
-<!-- ══════════════════════════════════════════════ -->
 <script>
-// ═══════════════════════════════════════════════════
-//  DATA LAYER
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
+//  GAME DATA
+// ═══════════════════════════════════════
 
-const VS_DAYS = [
-  { day: 1, weekday: 1, name: 'Radar Training',    short: 'RADAR',   emoji: '📡', points: 1, category: 'radar',    resources: ['Radar Missions','Radar Refreshes','Stamina'] },
-  { day: 2, weekday: 2, name: 'Base Expansion',    short: 'BASE',    emoji: '🏗️', points: 2, category: 'building', resources: ['Building Speedups','Upgrades','Diamonds'] },
-  { day: 3, weekday: 3, name: 'Age of Science',    short: 'TECH',    emoji: '🔬', points: 2, category: 'tech',     resources: ['Research Speedups','Tech Research'] },
-  { day: 4, weekday: 4, name: 'Train Heroes',      short: 'HEROES',  emoji: '🦸', points: 2, category: 'heroes',   resources: ['Hero XP','Hero Shards','Recruit Tickets'] },
-  { day: 5, weekday: 5, name: 'Total Mobilization',short: 'TROOPS',  emoji: '⚔️', points: 2, category: 'troops',   resources: ['Troop Training','Training Speedups','Promotions'] },
-  { day: 6, weekday: 6, name: 'Enemy Buster',      short: 'COMBAT',  emoji: '💥', points: 4, category: 'combat',   resources: ['Stamina','PvP Actions','Combat'] },
+const VS = [
+  { day:1, wd:1, name:'Radar Training',     short:'RADAR',   emoji:'📡', pts:1, cat:'radar',    res:['Radar Missions','Stamina','Radar Refreshes'] },
+  { day:2, wd:2, name:'Base Expansion',     short:'BASE',    emoji:'🏗️', pts:2, cat:'building', res:['Building Speedups','Building Upgrades','Diamonds'] },
+  { day:3, wd:3, name:'Age of Science',     short:'TECH',    emoji:'🔬', pts:2, cat:'tech',     res:['Research Speedups','Tech Completions'] },
+  { day:4, wd:4, name:'Train Heroes',       short:'HEROES',  emoji:'🦸', pts:2, cat:'heroes',   res:['Hero XP','Recruit Tickets','Hero Shards'] },
+  { day:5, wd:5, name:'Total Mobilization', short:'TROOPS',  emoji:'⚔️', pts:2, cat:'troops',   res:['Training Speedups','Troop Training','Promotions'] },
+  { day:6, wd:6, name:'Enemy Buster',       short:'COMBAT',  emoji:'💥', pts:4, cat:'combat',   res:['Stamina','PvP Actions','Combat'] },
 ];
 
-// Arms Race phases: 5 types
-const AR_PHASE = {
-  CITY:  { id: 'city',  name: 'City Building',    emoji: '🏗️', tag: 'ar-tag-build', category: 'building', vsMatch: ['Base Expansion'] },
-  UNIT:  { id: 'unit',  name: 'Unit Progression', emoji: '⚔️', tag: 'ar-tag-unit',  category: 'troops',   vsMatch: ['Total Mobilization'] },
-  TECH:  { id: 'tech',  name: 'Tech Research',    emoji: '🔬', tag: 'ar-tag-tech',  category: 'tech',     vsMatch: ['Age of Science'] },
-  DRONE: { id: 'drone', name: 'Drone Boost',      emoji: '🚁', tag: 'ar-tag-drone', category: 'drone',    vsMatch: ['Radar Training','Enemy Buster'] },
-  HERO:  { id: 'hero',  name: 'Hero Advancement', emoji: '🦸', tag: 'ar-tag-hero',  category: 'heroes',   vsMatch: ['Train Heroes'] },
+const AR = {
+  CITY:  { id:'city',  name:'City Building',    emoji:'🏗️', cls:'t-build', cat:'building', vsMatch:['Base Expansion'] },
+  UNIT:  { id:'unit',  name:'Unit Progression', emoji:'⚔️', cls:'t-unit',  cat:'troops',   vsMatch:['Total Mobilization'] },
+  TECH:  { id:'tech',  name:'Tech Research',    emoji:'🔬', cls:'t-tech',  cat:'tech',     vsMatch:['Age of Science'] },
+  DRONE: { id:'drone', name:'Drone Boost',      emoji:'🚁', cls:'t-drone', cat:'drone',    vsMatch:['Radar Training','Enemy Buster'] },
+  HERO:  { id:'hero',  name:'Hero Advancement', emoji:'🦸', cls:'t-hero',  cat:'heroes',   vsMatch:['Train Heroes'] },
 };
 
-// Full rotation from csmit195.com (server time, reset = 2AM)
-// Each day: 6 slots × 4h starting from 2AM
-// Slot 0 = 2AM-6AM, Slot 1 = 6AM-10AM, Slot 2 = 10AM-2PM, Slot 3 = 2PM-6PM, Slot 4 = 6PM-10PM, Slot 5 = 10PM-2AM
-const AR_SCHEDULE = {
-  1: ['HERO','CITY','UNIT','TECH','DRONE','HERO'],  // Monday
-  2: ['DRONE','HERO','CITY','UNIT','TECH','DRONE'], // Tuesday
-  3: ['HERO','CITY','UNIT','TECH','DRONE','HERO'],  // Wednesday (same as Mon)
-  4: ['CITY','UNIT','TECH','DRONE','HERO','CITY'],  // Thursday
-  5: ['UNIT','TECH','DRONE','HERO','CITY','UNIT'],  // Friday
-  6: ['TECH','DRONE','HERO','CITY','UNIT','TECH'],  // Saturday
-  0: ['DRONE','HERO','CITY','UNIT','TECH','DRONE'], // Sunday
+// Verified schedule from csmit195.com (slots: 0=02-06, 1=06-10, 2=10-14, 3=14-18, 4=18-22, 5=22-02)
+const SCHED = {
+  0: ['DRONE','HERO','CITY','UNIT','TECH','DRONE'],
+  1: ['HERO','CITY','UNIT','TECH','DRONE','HERO'],
+  2: ['DRONE','HERO','CITY','UNIT','TECH','DRONE'],
+  3: ['HERO','CITY','UNIT','TECH','DRONE','HERO'],
+  4: ['CITY','UNIT','TECH','DRONE','HERO','CITY'],
+  5: ['UNIT','TECH','DRONE','HERO','CITY','UNIT'],
+  6: ['TECH','DRONE','HERO','CITY','UNIT','TECH'],
 };
 
-const RESOURCES = {
-  'Radar Missions':     { emoji: '📡', category: 'radar',    desc: 'Complete radar missions, use stamina' },
-  'Radar Refreshes':    { emoji: '🔄', category: 'radar',    desc: 'Refresh radar for new missions' },
-  'Building Speedups':  { emoji: '⚡', category: 'building', desc: 'Construction speedups (any type)' },
-  'Research Speedups':  { emoji: '⚡', category: 'tech',     desc: 'Science/generic speedups' },
-  'Training Speedups':  { emoji: '⚡', category: 'troops',   desc: 'Training speedups (any type)' },
-  'Hero XP':            { emoji: '✨', category: 'heroes',   desc: 'Hero experience items' },
-  'Hero Shards':        { emoji: '💎', category: 'heroes',   desc: 'Hero shard items' },
-  'Recruit Tickets':    { emoji: '🎫', category: 'heroes',   desc: 'Legendary recruitment tickets' },
-  'Troop Training':     { emoji: '⚔️', category: 'troops',   desc: 'Queue troops for training' },
-  'Troop Promotions':   { emoji: '🎖️', category: 'troops',   desc: 'Promote existing troops' },
-  'Drone Data':         { emoji: '🚁', category: 'drone',    desc: 'Drone combat data points' },
-  'Stamina':            { emoji: '💠', category: 'drone',    desc: 'Stamina for attacks/radar' },
-  'PvP Actions':        { emoji: '💥', category: 'combat',   desc: 'Attack enemies, rallies' },
-  'Building Upgrades':  { emoji: '🏗️', category: 'building', desc: 'Level up buildings (unwrap after)' },
-  'Tech Research':      { emoji: '🔬', category: 'tech',     desc: 'Complete research (click icon after)' },
-  'Diamonds':           { emoji: '💠', category: 'any',      desc: 'Pack purchases (always count)' },
-};
+const SLOT_STARTS = [2,6,10,14,18,22];
+const SLOT_ENDS   = [6,10,14,18,22,26];
 
-// ═══════════════════════════════════════════════════
-//  TIME ENGINE
-// ═══════════════════════════════════════════════════
+// All resources with concrete advice
+const RESOURCES = [
+  { emoji:'📡', name:'Radar / Stamina',    cat:'radar',    vsDay:'Radar Training',     arKey:'DRONE', desc:'Radar missies, stamina verbruiken' },
+  { emoji:'🏗️', name:'Building Speedups',  cat:'building', vsDay:'Base Expansion',     arKey:'CITY',  desc:'Constructie speedups gebruiken' },
+  { emoji:'🔬', name:'Research Speedups',  cat:'tech',     vsDay:'Age of Science',     arKey:'TECH',  desc:'Wetenschap speedups + research afronden' },
+  { emoji:'🦸', name:'Hero XP / Tickets',  cat:'heroes',   vsDay:'Train Heroes',       arKey:'HERO',  desc:'Hero XP gebruiken, tickets trekken' },
+  { emoji:'⚔️', name:'Training Speedups',  cat:'troops',   vsDay:'Total Mobilization', arKey:'UNIT',  desc:'Training speedups, troepen trainen' },
+  { emoji:'💥', name:'PvP / Combat',       cat:'combat',   vsDay:'Enemy Buster',       arKey:'DRONE', desc:'Aanvallen, stamina voor PvP' },
+  { emoji:'🚁', name:'Drone Data',         cat:'drone',    vsDay:null,                 arKey:'DRONE', desc:'Drone combat data punten' },
+  { emoji:'💠', name:'Diamonds / Packs',   cat:'any',      vsDay:null,                 arKey:'any',   desc:'Pakjes kopen met Diamonds' },
+];
 
-function getServerOffset() {
-  return parseInt(document.getElementById('serverOffset').value || '-5');
+// ═══════════════════════════════════════
+//  STATE & SETTINGS
+// ═══════════════════════════════════════
+
+let settings = { offset: 0, arOverride: '', notif: false };
+
+function loadSettings() {
+  try {
+    const s = JSON.parse(localStorage.getItem('orc_settings') || '{}');
+    settings = { offset: s.offset ?? 0, arOverride: s.arOverride ?? '', notif: s.notif ?? false };
+    document.getElementById('offsetSelect').value = settings.offset;
+    document.getElementById('arOverride').value   = settings.arOverride;
+    if (settings.notif) document.getElementById('notifBtn').classList.add('on');
+    // If previously set up, hide setup banner
+    if (s._setup) document.getElementById('setupBanner').classList.remove('show');
+    updateNotifButton();
+  } catch(e) {}
 }
+
+function saveSettings() {
+  settings.offset     = parseInt(document.getElementById('offsetSelect').value);
+  settings.arOverride = document.getElementById('arOverride').value;
+  try { localStorage.setItem('orc_settings', JSON.stringify({ ...settings, _setup: true })); } catch(e) {}
+}
+
+// ═══════════════════════════════════════
+//  CALIBRATION
+// ═══════════════════════════════════════
+
+function calibrateFromInput() {
+  const val = document.getElementById('serverTimeInput').value.trim();
+  const match = val.match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) { alert('Vul een geldige tijd in, bijv. 14:30'); return; }
+  const serverH = parseInt(match[1]);
+  const serverM = parseInt(match[2]);
+  const now = new Date();
+  const localH = now.getHours();
+  const localM = now.getMinutes();
+  // Calculate offset: server = local + offset
+  let diffH = serverH - localH;
+  const diffM = serverM - localM;
+  if (Math.abs(diffM) > 15) diffH += diffM > 0 ? 1 : -1;
+  if (diffH > 12) diffH -= 24;
+  if (diffH < -12) diffH += 24;
+  document.getElementById('offsetSelect').value = diffH;
+  settings.offset = diffH;
+  saveSettings();
+  document.getElementById('setupBanner').classList.remove('show');
+  fullRender();
+}
+
+// ═══════════════════════════════════════
+//  TIME ENGINE
+// ═══════════════════════════════════════
 
 function getServerTime() {
   const now = new Date();
   const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-  return new Date(utc + getServerOffset() * 3600000);
+  return new Date(utc + settings.offset * 3600000);
 }
 
-// Server day: weekday 0=Sun, 1=Mon, ..., 6=Sat
-// Server day starts at 2:00 AM (after reset)
-function getServerDay() {
-  const st = getServerTime();
+function getSlot(st) {
   const h = st.getHours();
-  let wd = st.getDay();
-  // Before 2AM server time, it's still the "previous VS day" effectively
-  // But for simplicity, VS day follows calendar day
-  return wd;
-}
-
-function getArSlot(serverTime) {
-  const h = serverTime.getHours();
-  // Slots start at 2AM: [2,6), [6,10), [10,14), [14,18), [18,22), [22,2)
-  if (h >= 2 && h < 6)   return 0;
-  if (h >= 6 && h < 10)  return 1;
+  if (h >= 2  && h < 6)  return 0;
+  if (h >= 6  && h < 10) return 1;
   if (h >= 10 && h < 14) return 2;
   if (h >= 14 && h < 18) return 3;
   if (h >= 18 && h < 22) return 4;
-  return 5; // 22:00 - 2:00 next day
+  return 5;
 }
 
-function getSlotStartHour(slot) {
-  return [2, 6, 10, 14, 18, 22][slot];
-}
-
-function getSlotEndHour(slot) {
-  return [6, 10, 14, 18, 22, 26][slot]; // 26 = 2AM next day
-}
-
-function getArPhaseForDaySlot(weekday, slot) {
-  const key = AR_PHASE[AR_SCHEDULE[weekday][slot]];
-  return key;
-}
-
-function getCurrentArPhase() {
+function getArPhaseNow() {
+  if (settings.arOverride) return AR[settings.arOverride];
   const st = getServerTime();
-  const wd = st.getDay();
-  const slot = getArSlot(st);
-  return getArPhaseForDaySlot(wd, slot);
+  return AR[SCHED[st.getDay()][getSlot(st)]];
 }
 
-function getNextArPhase() {
+function getArPhaseAt(wd, slot) {
+  return AR[SCHED[wd][slot]];
+}
+
+function getVsDay() {
+  const wd = getServerTime().getDay();
+  if (wd === 0) return null;
+  return VS.find(v => v.wd === wd) || null;
+}
+
+function secsUntilSlotEnd() {
   const st = getServerTime();
-  const wd = st.getDay();
-  const slot = getArSlot(st);
-  const nextSlot = (slot + 1) % 6;
-  let nextWd = wd;
-  if (nextSlot === 0) {
-    nextWd = (wd + 1) % 7;
-  }
-  return getArPhaseForDaySlot(nextWd, nextSlot);
+  const slot = getSlot(st);
+  let endH = SLOT_ENDS[slot];
+  const endDate = new Date(st);
+  if (endH >= 24) { endDate.setDate(endDate.getDate()+1); endH -= 24; }
+  endDate.setHours(endH, 0, 0, 0);
+  return Math.max(0, Math.floor((endDate - st) / 1000));
 }
 
-function getMinutesUntilSlotEnd(serverTime) {
-  const slot = getArSlot(serverTime);
-  const endHour = getSlotEndHour(slot);
-  const endMin = endHour * 60;
-  const curMin = serverTime.getHours() * 60 + serverTime.getMinutes();
-  let diff = endMin - curMin;
-  if (diff < 0) diff += 24 * 60;
-  return diff;
-}
-
-function formatCountdown(totalSeconds) {
-  const h = Math.floor(totalSeconds / 3600);
-  const m = Math.floor((totalSeconds % 3600) / 60);
-  const s = totalSeconds % 60;
+function fmt(totalSecs) {
+  const h = Math.floor(totalSecs/3600);
+  const m = Math.floor((totalSecs%3600)/60);
+  const s = totalSecs%60;
   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
 
-function formatDuration(minutes) {
-  if (minutes < 60) return `${minutes}m`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m > 0 ? `${h}h ${m}m` : `${h}h`;
-}
-
-// ═══════════════════════════════════════════════════
-//  VS ENGINE
-// ═══════════════════════════════════════════════════
-
-function getVsDay() {
-  const wd = getServerDay();
-  if (wd === 0) return null; // Sunday — no VS
-  return VS_DAYS.find(d => d.weekday === wd) || null;
-}
-
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 //  OVERLAP ENGINE
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 
-function calcOverlapScore(vsDay, arPhase) {
-  if (!vsDay || !arPhase) return 0;
-  // Perfect match: VS category == AR category
+function overlapScore(vsDay, arPhase) {
+  if (!vsDay || !arPhase) return arPhase ? 40 : 0; // Sunday: AR only
   if (arPhase.vsMatch.includes(vsDay.name)) return 100;
-  // Partial: related categories
-  if (vsDay.category === arPhase.category) return 80;
-  // Drone overlaps with stamina use (radar/combat)
-  if (arPhase.id === 'drone' && (vsDay.category === 'radar' || vsDay.category === 'combat')) return 70;
+  if (vsDay.cat === arPhase.cat) return 80;
+  if (arPhase.id === 'drone' && (vsDay.cat === 'radar' || vsDay.cat === 'combat')) return 75;
   return 20;
 }
 
-function getOverlapLabel(score) {
-  if (score >= 100) return { text: 'PERFECT', cls: 'overlap-perfect' };
-  if (score >= 70)  return { text: 'GOOD',    cls: 'overlap-good' };
-  return               { text: 'LOW',    cls: 'overlap-none' };
+function overlapLabel(score) {
+  if (score >= 100) return { text:'PERFECT', cls:'badge-perfect' };
+  if (score >= 70)  return { text:'GOED',    cls:'badge-good'    };
+  return               { text:'LAAG',   cls:'badge-low'     };
 }
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 //  RECOMMENDATION ENGINE
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
 
-function buildRecommendations() {
-  const vsDay = getVsDay();
-  const arPhase = getCurrentArPhase();
-  const isSunday = getServerDay() === 0;
+function buildRecs() {
+  const vsDay   = getVsDay();
+  const arPhase = getArPhaseNow();
+  const isSun   = getServerTime().getDay() === 0;
 
-  const recommendations = {
-    spend: [],
-    save:  [],
-    delay: [],
-    avoid: []
-  };
+  return RESOURCES.map(r => {
+    const vsMatch = vsDay && vsDay.name === r.vsDay;
+    const arMatch = arPhase && (arPhase.id === r.arKey || r.arKey === 'any');
+    const arDrone = arPhase && arPhase.id === 'drone';
 
-  // All resource categories
-  const allCats = [
-    { cat: 'radar',    label: 'Radar / Stamina',    emoji: '📡', vsDay: 'Radar Training',     arPhase: 'DRONE' },
-    { cat: 'building', label: 'Building Speedups',  emoji: '🏗️', vsDay: 'Base Expansion',     arPhase: 'CITY' },
-    { cat: 'tech',     label: 'Research Speedups',  emoji: '🔬', vsDay: 'Age of Science',      arPhase: 'TECH' },
-    { cat: 'heroes',   label: 'Hero XP / Tickets',  emoji: '🦸', vsDay: 'Train Heroes',        arPhase: 'HERO' },
-    { cat: 'troops',   label: 'Training Speedups',  emoji: '⚔️', vsDay: 'Total Mobilization',  arPhase: 'UNIT' },
-    { cat: 'combat',   label: 'PvP / Combat',       emoji: '💥', vsDay: 'Enemy Buster',        arPhase: 'DRONE' },
-    { cat: 'drone',    label: 'Drone Data',         emoji: '🚁', vsDay: null,                  arPhase: 'DRONE' },
-    { cat: 'any',      label: 'Diamonds / Packs',   emoji: '💠', vsDay: null,                  arPhase: 'any' },
-  ];
+    let score = 0, action = 'avoid', reasons = [], tip = '';
 
-  for (const r of allCats) {
-    let score = 0;
-    let reasons = [];
-    let action = 'avoid';
-
-    const vsMatch  = vsDay && vsDay.name === r.vsDay;
-    const arMatch  = arPhase && (arPhase.id === r.arPhase.toLowerCase() || r.arPhase === 'any');
-    const arDrone  = arPhase && arPhase.id === 'drone';
-
-    // Diamonds always decent
     if (r.cat === 'any') {
-      score = 60;
-      reasons.push('Always earns AR points');
-      if (arMatch) { score = 90; reasons.push('Good during any phase'); }
-      action = 'spend';
-    }
-    // Drone data: only check AR
-    else if (r.cat === 'drone') {
-      if (isSunday || arDrone) {
-        score = 90; reasons.push('Active Drone Boost phase'); action = 'spend';
+      score = 65; action = 'spend';
+      reasons.push('Diamonds tellen altijd mee voor AR punten');
+      tip = 'Koop pakketten tijdens elke AR fase.';
+    } else if (r.cat === 'drone') {
+      if (arDrone || isSun) { score = 90; action = 'spend'; reasons.push('🚁 Drone Boost actief — gebruik nu drone data'); tip='Ga naar Drone Center → Data Training.'; }
+      else { score = 15; action = 'delay'; const next = nextPhaseOf('DRONE'); reasons.push(`Wacht op Drone Boost fase (~${next})`); tip=`Sla op. Drone Boost fase start over ~${next}.`; }
+    } else if (r.cat === 'radar' || r.cat === 'combat') {
+      if (vsMatch && arDrone) { score = 100; action = 'spend'; reasons.push('🎯 PERFECT — VS dag + AR Drone = dubbele punten!'); tip='Gebruik stamina nu voor maximale VS én AR punten.'; }
+      else if (vsMatch)       { score = 70;  action = 'spend'; reasons.push('✅ VS dag actief — goed moment'); tip='VS punten verdien je nu. AR bonus mis je wel.'; }
+      else if (arDrone)       { score = 60;  action = 'spend'; reasons.push('🚁 Drone Boost = stamina telt mee'); tip='Gebruik stamina voor AR punten via Drone Boost.'; }
+      else { score = 20; action = 'delay'; const nxt = nextOverlapOf(r.cat); reasons.push(`Wacht — beter venster over ~${nxt}`); tip=`Sla stamina op. Beter venster over ~${nxt}.`; }
+    } else {
+      if (!isSun && vsMatch && arMatch) {
+        score = 100; action = 'spend';
+        const arBadges = 3;
+        reasons.push(`🎯 PERFECT — ${vsDay.name} + ${arPhase.name}`);
+        tip = `Perfecte overlap! Je verdient nu VS punten én ${arBadges} AR badges. Gebruik alles.`;
+      } else if (!isSun && vsMatch) {
+        score = 65; action = 'spend';
+        const wait = secsToArMatch(r.arKey);
+        if (wait < 3*3600) {
+          reasons.push(`✅ VS actief — AR fase begint over ${fmtMin(wait/60)}`);
+          tip = `VS punten verdien je nu. Wacht nog ${fmtMin(wait/60)} voor AR fase = +3 badges extra.`;
+          action = wait < 30*60 ? 'spend' : 'delay';
+        } else {
+          reasons.push(`VS dag actief maar AR fase is ver weg (~${fmtMin(wait/60)})`);
+          tip = `Spendeer voor VS punten, maar mis AR badges. AR fase over ~${fmtMin(wait/60)}.`;
+        }
+      } else if (arMatch) {
+        score = 55; action = 'spend';
+        reasons.push(`🔬 AR fase actief — verdien ${arPhase.name} badges`);
+        tip = `Geen VS bonus maar wel +3 AR badges per fase. Handig als je VS al klaar hebt.`;
+      } else if (isSun) {
+        score = 30; action = 'delay';
+        const next = nextPhaseOf(r.arKey);
+        reasons.push(`Zondag — alleen AR, fase niet actief (~${next})`);
+        tip = `AR fase voor jouw resource start over ~${next}.`;
       } else {
-        // Find next DRONE phase
-        score = 20; reasons.push('Save for Drone Boost phase'); action = 'delay';
+        score = 10; action = 'save';
+        const nextVS = vsDay ? '' : ` VS dag begint ${nextVsDayName(r.vsDay)}.`;
+        reasons.push(`Misaligned — wacht op ${r.vsDay} + ${AR[r.arKey]?.name}`);
+        tip = `Niet spenderen.${nextVS} Sla op voor overlap venster.`;
       }
     }
-    // Combat/radar also count during Drone Boost (stamina)
-    else if (r.cat === 'radar' || r.cat === 'combat') {
-      if (vsMatch && arDrone)      { score = 100; reasons.push('VS day + AR Drone = double points!'); action = 'spend'; }
-      else if (vsMatch)            { score = 70;  reasons.push('VS day active — good to spend'); action = 'spend'; }
-      else if (arDrone)            { score = 60;  reasons.push('Drone Boost — stamina counts'); action = 'spend'; }
-      else                         { score = 20;  reasons.push('Neither VS day nor Drone phase'); action = 'delay'; }
-    }
-    // Standard categories
-    else {
-      if (!isSunday && vsMatch && arMatch)  { score = 100; reasons.push('PERFECT — VS day + AR phase aligned!'); action = 'spend'; }
-      else if (!isSunday && vsMatch)        { score = 65;  reasons.push('VS day active — still worthwhile'); action = 'spend'; }
-      else if (arMatch)                     { score = 55;  reasons.push('AR phase active — earns AR badges'); action = 'spend'; }
-      else if (isSunday && arMatch)         { score = 55;  reasons.push('Arms Race Only — AR phase matches'); action = 'spend'; }
-      else if (isSunday)                    { score = 25;  reasons.push('Sunday — only AR rewards available'); action = 'delay'; }
-      else                                  { score = 15;  reasons.push('Misaligned — save for overlap window'); action = 'save'; }
-    }
 
-    // Bonus: high VS point day (Total Mobilization = 4pts on Fri counts double)
-    if (!isSunday && vsDay && vsDay.points === 4 && vsMatch) {
-      score = Math.min(100, score + 10);
-      reasons.push('4-pt VS day bonus!');
-    }
+    // 4-pt day bonus
+    if (!isSun && vsDay && vsDay.pts === 4 && vsMatch) { score = Math.min(100, score+5); }
 
-    recommendations[action].push({
-      name: r.label,
-      emoji: r.emoji,
-      cat: r.cat,
-      score: score,
-      reason: reasons.join(' · '),
-    });
-  }
-
-  return recommendations;
+    return { ...r, score, action, reason: reasons[0] || '—', tip };
+  });
 }
 
-// ═══════════════════════════════════════════════════
-//  UPCOMING WINDOWS ENGINE (next 72h)
-// ═══════════════════════════════════════════════════
+function nextPhaseOf(arKey) {
+  const st = getServerTime();
+  const wd = st.getDay();
+  const slot = getSlot(st);
+  for (let i = 1; i <= 18; i++) {
+    const ns = (slot+i)%6;
+    const nwd = ((slot+i) >= 6) ? (wd+Math.floor((slot+i)/6))%7 : wd;
+    if (SCHED[nwd][ns] === arKey) return fmtMin(i*4*60 - (secsUntilSlotEnd() ? (4*3600 - secsUntilSlotEnd())/60 : 0));
+  }
+  return '?';
+}
 
-function getUpcomingWindows() {
-  const now = getServerTime();
-  const windows = [];
+function secsToArMatch(arKey) {
+  const st = getServerTime();
+  const wd = st.getDay();
+  const slot = getSlot(st);
+  const secsLeft = secsUntilSlotEnd();
+  for (let i = 1; i <= 18; i++) {
+    const ns = (slot+i)%6;
+    const nd = ((slot+i) >= 6) ? (wd+Math.floor((slot+i)/6))%7 : wd;
+    if (SCHED[nd][ns] === arKey) return (i-1)*4*3600 + secsLeft;
+  }
+  return 99*3600;
+}
 
-  // Scan next 72 hours in 4-hour slots
-  for (let slotOffset = 1; slotOffset <= 18; slotOffset++) {
-    const futureTime = new Date(now.getTime() + slotOffset * 4 * 3600000);
-    const ft_wd = futureTime.getDay();
-    const ft_slot = getArSlot(futureTime);
-    const ft_arPhase = getArPhaseForDaySlot(ft_wd, ft_slot);
-    const ft_vsDay = ft_wd === 0 ? null : VS_DAYS.find(d => d.weekday === ft_wd);
+function nextVsDayName(vsDayName) {
+  const wd = getServerTime().getDay();
+  const target = VS.find(v => v.name === vsDayName);
+  if (!target) return '?';
+  let diff = target.wd - wd;
+  if (diff <= 0) diff += 7;
+  return ['zon','maa','din','woe','don','vri','zat'][target.wd]+'dag';
+}
 
-    const overlapScore = calcOverlapScore(ft_vsDay, ft_arPhase);
+function nextOverlapOf(cat) {
+  const st = getServerTime();
+  const wd = st.getDay();
+  const slot = getSlot(st);
+  for (let i = 1; i <= 42; i++) {
+    const ns = (slot+i)%6;
+    const nd = ((wd + Math.floor((slot+i)/6))%7);
+    const arCat = AR[SCHED[nd][ns]]?.cat;
+    const vsD = nd === 0 ? null : VS.find(v => v.wd === nd);
+    if (vsD && vsD.cat === cat && arCat === cat) return fmtMin(i*4*60);
+  }
+  return '?';
+}
 
-    if (overlapScore >= 70) {
-      const hoursUntil = slotOffset * 4;
-      const slotStart = getSlotStartHour(ft_slot);
-      const slotEnd = getSlotEndHour(ft_slot) % 24;
+function fmtMin(m) {
+  m = Math.round(m);
+  if (m < 60) return m+'m';
+  return Math.floor(m/60)+'u'+(m%60>0?' '+m%60+'m':'');
+}
 
-      windows.push({
-        hoursUntil,
-        vsDay: ft_vsDay,
-        arPhase: ft_arPhase,
-        overlapScore,
-        timeLabel: `In ~${hoursUntil}h`,
-        slotLabel: `${String(slotStart).padStart(2,'0')}:00–${String(slotEnd).padStart(2,'0')}:00 server`,
-        dayLabel: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][ft_wd],
+// ═══════════════════════════════════════
+//  UPCOMING WINDOWS
+// ═══════════════════════════════════════
+
+function getWindows() {
+  const st = getServerTime();
+  const wd = st.getDay();
+  const slot = getSlot(st);
+  const wins = [];
+  for (let i = 1; i <= 18; i++) {
+    const ns = (slot+i)%6;
+    const nd = ((wd + Math.floor((slot+i)/6))%7);
+    const arP = AR[SCHED[nd][ns]];
+    const vsD = nd === 0 ? null : VS.find(v => v.wd === nd);
+    const sc = overlapScore(vsD, arP);
+    if (sc >= 70) {
+      const hoursUntil = i*4 - Math.ceil(secsUntilSlotEnd()/3600) + 4;
+      const startH = SLOT_STARTS[ns];
+      const endH = SLOT_ENDS[ns]%24;
+      wins.push({
+        hoursUntil: i*4,
+        secsUntil: (i-1)*4*3600 + secsUntilSlotEnd(),
+        vsDay: vsD, arPhase: arP, score: sc,
+        dayName: ['Zo','Ma','Di','Wo','Do','Vr','Za'][nd],
+        slot: `${String(startH).padStart(2,'0')}:00–${String(endH).padStart(2,'0')}:00 server`,
       });
     }
   }
-
-  return windows.slice(0, 8);
+  return wins.slice(0,6);
 }
 
-// ═══════════════════════════════════════════════════
-//  RENDER FUNCTIONS
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════
+//  NOTIFICATIONS
+// ═══════════════════════════════════════
 
-function renderVsWeek() {
-  const wd = getServerDay();
-  const days = [
-    { wd: 1, label: 'MON', vs: VS_DAYS[0] },
-    { wd: 2, label: 'TUE', vs: VS_DAYS[1] },
-    { wd: 3, label: 'WED', vs: VS_DAYS[2] },
-    { wd: 4, label: 'THU', vs: VS_DAYS[3] },
-    { wd: 5, label: 'FRI', vs: VS_DAYS[4] },
-    { wd: 6, label: 'SAT', vs: VS_DAYS[5] },
-    { wd: 0, label: 'SUN', vs: null },
-  ];
+let notifCheckInterval = null;
 
-  return days.map(d => {
-    const isActive = d.wd === wd;
-    const isPast = (d.wd !== 0 && wd !== 0) ?
-      (d.wd < wd) : false;
-    const isSun = d.wd === 0;
-
-    let cls = 'vs-day-block';
-    if (isActive) cls += ' active';
-    else if (isPast) cls += ' past';
-    else if (isSun) cls += ' sunday';
-
-    const dot = isActive ? '<div class="vsd-active-dot"></div>' : '';
-
-    if (isSun) {
-      return `<div class="${cls}">${dot}
-        <div class="vsd-day">${d.label}</div>
-        <div class="vsd-emoji">😴</div>
-        <div class="vsd-name" style="color:var(--text-dim)">AR Only</div>
-        <div class="vsd-pts">No VS</div>
-      </div>`;
+function toggleNotifications() {
+  if (!('Notification' in window)) { alert('Browser ondersteunt geen meldingen.'); return; }
+  if (settings.notif) {
+    settings.notif = false;
+    saveSettings();
+    updateNotifButton();
+    if (notifCheckInterval) clearInterval(notifCheckInterval);
+    return;
+  }
+  Notification.requestPermission().then(p => {
+    if (p === 'granted') {
+      settings.notif = true;
+      saveSettings();
+      updateNotifButton();
+      startNotifCheck();
+      new Notification('ORC Meldingen aan ✓', { body: 'Je krijgt een melding als een perfect overlap venster begint.' });
+    } else {
+      alert('Meldingen geweigerd — sta ze toe in je browser instellingen.');
     }
-
-    return `<div class="${cls}">${dot}
-      <div class="vsd-day">${d.label}</div>
-      <div class="vsd-emoji">${d.vs.emoji}</div>
-      <div class="vsd-name ${isActive ? 'active' : ''}">${d.vs.short}</div>
-      <div class="vsd-pts">${d.vs.points}pt${d.vs.points>1?'s':''}</div>
-    </div>`;
-  }).join('');
+  });
 }
 
-function renderArPhaseBar() {
-  const st = getServerTime();
-  const wd = st.getDay();
-  const currentSlot = getArSlot(st);
-  const schedule = AR_SCHEDULE[wd];
-
-  return schedule.map((phaseKey, slot) => {
-    const phase = AR_PHASE[phaseKey];
-    const startH = getSlotStartHour(slot);
-    const endH = getSlotEndHour(slot) % 24;
-    const isCurrent = slot === currentSlot;
-    const isNext = slot === (currentSlot + 1) % 6;
-
-    let cls = 'ar-phase-seg';
-    if (isCurrent) cls += ' current';
-    else if (isNext) cls += ' next';
-
-    const label = isCurrent ? '<div class="ar-phase-current-label">NOW</div>' : '';
-
-    return `<div class="${cls}">${label}
-      <span class="ar-phase-emoji">${phase.emoji}</span>
-      <span class="ar-phase-name">${phase.name}</span>
-      <span class="ar-phase-time">${String(startH).padStart(2,'0')}–${String(endH).padStart(2,'0')}</span>
-    </div>`;
-  }).join('');
+function updateNotifButton() {
+  const btn = document.getElementById('notifBtn');
+  if (settings.notif) { btn.classList.add('on'); btn.textContent = '🔔 Meldingen aan'; }
+  else { btn.classList.remove('on'); btn.textContent = '🔔 Meldingen uit'; }
 }
 
-function renderArTag(phaseKey) {
-  const phase = AR_PHASE[phaseKey];
-  return `<span class="ar-phase-tag ${phase.tag}">${phase.emoji} ${phase.name}</span>`;
+let lastNotifSlot = -1;
+function startNotifCheck() {
+  if (notifCheckInterval) clearInterval(notifCheckInterval);
+  notifCheckInterval = setInterval(() => {
+    if (!settings.notif || Notification.permission !== 'granted') return;
+    const st = getServerTime();
+    const slot = getSlot(st);
+    if (slot === lastNotifSlot) return;
+    lastNotifSlot = slot;
+    const arP = getArPhaseNow();
+    const vsD = getVsDay();
+    const sc = overlapScore(vsD, arP);
+    if (sc >= 100) {
+      new Notification(`🎯 PERFECT VENSTER ACTIEF — ${vsD?.name}!`, {
+        body: `${arP.name} fase is nu actief. Gebruik je ${vsD?.res[0]} + ${vsD?.res[1]} voor maximale punten!`,
+      });
+    } else if (sc >= 70) {
+      new Notification(`✅ Goed venster — ${arP.name}`, {
+        body: `Goede AR fase actief${vsD ? ' met '+vsD.name : ''}. Verdien AR badges.`,
+      });
+    }
+    // 15-min warning for upcoming perfect windows
+    const wins = getWindows();
+    if (wins.length > 0 && wins[0].secsUntil < 900 && wins[0].secsUntil > 0 && wins[0].score >= 100) {
+      new Notification(`⏰ Perfect venster over 15 min!`, {
+        body: `${wins[0].vsDay?.name || ''} + ${wins[0].arPhase.name} — bereid je voor!`,
+      });
+    }
+  }, 30000);
 }
 
-function renderCommandGrid() {
-  const recs = buildRecommendations();
+// ═══════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════
 
-  const panels = [
-    { key: 'spend', icon: '✅', title: 'SPEND NOW',  cls: 'spend', score: 'Maximum Value' },
-    { key: 'save',  icon: '🔒', title: 'SAVE',       cls: 'save',  score: 'Wait for Match' },
-    { key: 'delay', icon: '⏳', title: 'DELAY',      cls: 'delay', score: 'Better Later' },
-    { key: 'avoid', icon: '🚫', title: 'AVOID',      cls: 'avoid', score: 'Wasted Resources' },
-  ];
+function renderHero() {
+  const recs = buildRecs();
+  const vsDay = getVsDay();
+  const arPhase = getArPhaseNow();
+  const isSun = getServerTime().getDay() === 0;
 
-  return panels.map(p => {
-    const items = recs[p.key];
-    if (items.length === 0) return '';
+  // Hero header
+  const sc = overlapScore(vsDay, arPhase);
+  document.getElementById('heroHeaderLabel').textContent =
+    isSun ? 'ZONDAG — ARMS RACE ONLY MODE' :
+    sc >= 100 ? '🎯 PERFECT OVERLAP ACTIEF' :
+    sc >= 70  ? '✅ GOED VENSTER ACTIEF' :
+                'COMMAND STATUS';
+  document.getElementById('heroHeaderSub').textContent =
+    vsDay ? `${vsDay.emoji} ${vsDay.name} × ${arPhase.emoji} ${arPhase.name}` :
+    `${arPhase?.emoji ?? ''} ${arPhase?.name ?? '—'} (geen VS vandaag)`;
 
-    const itemsHtml = items.map(item => `
-      <div class="resource-item ${p.cls}">
-        <div class="res-emoji">${item.emoji}</div>
-        <div class="res-info">
-          <div class="res-name">${item.name}</div>
-          <div class="res-reason">${item.reason}</div>
-        </div>
-        <div class="res-score ${p.cls}">${item.score}%</div>
-      </div>
-    `).join('');
+  // SPEND NOW resources
+  const spendRecs = recs.filter(r => r.action === 'spend').sort((a,b) => b.score - a.score);
+  const topRec = spendRecs[0];
 
-    return `<div class="cmd-panel ${p.cls}">
-      <div class="cmd-header ${p.cls}">
-        <div class="cmd-icon">${p.icon}</div>
-        <div class="cmd-label">
-          <div class="cmd-title ${p.cls}">${p.title}</div>
-          <div class="cmd-score">${p.score} · ${items.length} resource${items.length>1?'s':''}</div>
-        </div>
-      </div>
-      <div class="cmd-items">${itemsHtml}</div>
-    </div>`;
-  }).join('');
-}
+  if (topRec) {
+    document.getElementById('commandDesc').textContent = topRec.tip || topRec.reason;
+    document.getElementById('commandReason').innerHTML = topRec.reason;
 
-function renderTimeline() {
-  const windows = getUpcomingWindows();
+    const resHtml = spendRecs.map(r =>
+      `<div class="cmd-res-tag ${r.score>=90?'highlight':''}">
+        ${r.emoji} ${r.name}
+        ${r.score>=90 ? `<span class="bonus">+MAX</span>` : `<span class="bonus">${r.score}%</span>`}
+      </div>`
+    ).join('');
+    document.getElementById('cmdResources').innerHTML = resHtml || '<span style="color:var(--t4);font-size:12px">Geen optimale resources nu</span>';
 
-  if (windows.length === 0) {
-    return `<div class="timeline-card" style="grid-column:1/-1;text-align:center;padding:24px;color:var(--text-dim)">
-      No high-value overlap windows in the next 72h. Spend resources in AR-only mode for base gains.
-    </div>`;
+    const barCls = sc >= 80 ? 'green' : sc >= 50 ? 'orange' : 'red';
+    document.getElementById('effBar').className = `value-bar-fill ${barCls}`;
+    document.getElementById('effBar').style.width = sc + '%';
+    document.getElementById('effNow').textContent = sc + '% efficiëntie';
   }
 
-  return windows.map((w, i) => {
-    const isFirst = i === 0;
-    const cls = isFirst ? 'timeline-card priority-high' : (i < 3 ? 'timeline-card priority-medium' : 'timeline-card priority-low');
-    const ol = getOverlapLabel(w.overlapScore);
+  // MINI GRID (save/delay/avoid)
+  const saveRecs  = recs.filter(r => r.action === 'save');
+  const delayRecs = recs.filter(r => r.action === 'delay');
+  const avoidRecs = recs.filter(r => r.action === 'avoid');
 
-    const resources = w.vsDay ? w.vsDay.resources.slice(0,3).map(r =>
-      `<span class="tl-tag ${isFirst ? 'highlight' : ''}">${r}</span>`
-    ).join('') : `<span class="tl-tag">Drone Data</span><span class="tl-tag">Stamina</span>`;
+  const miniCard = (cls, icon, label, items) => {
+    if (items.length === 0) return '';
+    const rows = items.map(r => `<div class="mini-res">${r.emoji} ${r.name}<span class="why">${r.tip || r.reason}</span></div>`).join('');
+    return `<div class="mini-card ${cls}"><div class="mini-card-header">${icon} ${label}</div>${rows}</div>`;
+  };
 
+  document.getElementById('miniGrid').innerHTML =
+    miniCard('save', '🔒', 'BEWAAR', saveRecs) +
+    miniCard('delay', '⏳', 'WACHT', delayRecs) +
+    miniCard('avoid', '🚫', 'VERMIJD', avoidRecs);
+}
+
+function renderStatusStrip() {
+  const vsDay = getVsDay();
+  const arPhase = getArPhaseNow();
+  const isSun = getServerTime().getDay() === 0;
+  const secs = secsUntilSlotEnd();
+  const slot = getSlot(getServerTime());
+  const progress = ((4*3600 - secs) / (4*3600) * 100).toFixed(1);
+
+  document.getElementById('statVsDay').textContent = isSun ? 'ZONDAG' : `Dag ${vsDay?.day ?? '—'}`;
+  document.getElementById('statVsName').textContent = isSun ? 'AR Only' : (vsDay?.name ?? '—');
+  document.getElementById('statArPhase').textContent = arPhase ? arPhase.emoji+' '+arPhase.name : '—';
+  document.getElementById('statArSub').textContent = `Slot ${slot+1}/6`;
+  document.getElementById('statCountdown').textContent = fmt(secs);
+  document.getElementById('statProgress').style.width = progress+'%';
+
+  const wins = getWindows();
+  if (wins.length > 0) {
+    const w = wins[0];
+    document.getElementById('statNextWindow').textContent = w.vsDay ? w.vsDay.short : 'AR';
+    document.getElementById('statNextSub').textContent = `over ~${fmtMin(w.secsUntil/60)}`;
+  } else {
+    document.getElementById('statNextWindow').textContent = '—';
+    document.getElementById('statNextSub').textContent = 'Geen binnenkort';
+  }
+}
+
+function renderVsWeek() {
+  const wd = getServerTime().getDay();
+  const days = [
+    {wd:1,label:'MA',vs:VS[0]},{wd:2,label:'DI',vs:VS[1]},{wd:3,label:'WO',vs:VS[2]},
+    {wd:4,label:'DO',vs:VS[3]},{wd:5,label:'VR',vs:VS[4]},{wd:6,label:'ZA',vs:VS[5]},
+    {wd:0,label:'ZO',vs:null},
+  ];
+  document.getElementById('vsWeek').innerHTML = days.map(d => {
+    const isActive = d.wd === wd;
+    const isPast = wd>0 && d.wd>0 && d.wd<wd;
+    const isSun = d.wd===0;
+    let cls = 'vs-day' + (isActive?' active':isPast?' past':isSun?' sunday':'');
     return `<div class="${cls}">
-      <div class="tl-when">${w.dayLabel} · ${w.timeLabel}</div>
-      <div class="tl-event">${w.vsDay ? w.vsDay.emoji + ' ' + w.vsDay.name : '🚁 Arms Race Only'}</div>
-      <div class="tl-overlap">${w.arPhase.emoji} ${w.arPhase.name}</div>
-      <div class="tl-resources">${resources}</div>
-      <div class="tl-countdown" id="tlCountdown_${i}">–</div>
-      <div class="tl-value"><span class="overlap-badge ${ol.cls}">${ol.text} · ${w.overlapScore}%</span></div>
-      <div style="font-size:9px;color:var(--text-dim);margin-top:4px;">${w.slotLabel}</div>
+      ${isActive?'<div class="vs-dot"></div>':''}
+      <div class="vs-day-name">${d.label}</div>
+      <div class="vs-day-emoji">${d.vs?d.vs.emoji:'😴'}</div>
+      <div class="vs-day-short ${isActive?'active':''}">${d.vs?d.vs.short:'AR'}</div>
+      <div class="vs-day-pts">${d.vs?d.vs.pts+'pt':'—'}</div>
     </div>`;
   }).join('');
+}
+
+function renderArTimeline() {
+  const st = getServerTime();
+  const wd = st.getDay();
+  const curSlot = getSlot(st);
+  const vsDay = getVsDay();
+  document.getElementById('arTimeline').innerHTML = SCHED[wd].map((key, slot) => {
+    const phase = AR[key];
+    const isCur = slot === curSlot;
+    const isNext = slot === (curSlot+1)%6;
+    const sc = overlapScore(vsDay, phase);
+    const isOverlap = sc >= 100 && slot !== curSlot;
+    const startH = SLOT_STARTS[slot];
+    const endH = SLOT_ENDS[slot]%24;
+    let cls = 'ar-seg' + (isCur?' current':isNext?' next':isOverlap?' overlap':'');
+    const label = isCur ? '<div class="ar-seg-now">NU</div>' : isOverlap ? '<div class="ar-seg-overlap-label">OVERLAP</div>' : '';
+    return `<div class="${cls}">${label}
+      <span class="ar-seg-emoji">${phase.emoji}</span>
+      <span class="ar-seg-name">${phase.name}</span>
+      <span class="ar-seg-time">${String(startH).padStart(2,'0')}–${String(endH).padStart(2,'0')}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderWindows() {
+  const wins = getWindows();
+  if (wins.length === 0) {
+    document.getElementById('windowsList').innerHTML = `<div style="color:var(--t4);font-size:12px;padding:12px 0">Geen hoge-waarde vensters in de komende 72u. AR-only modus actief.</div>`;
+    return;
+  }
+  document.getElementById('windowsList').innerHTML = wins.map((w, i) => {
+    const ol = overlapLabel(w.score);
+    const isPerfect = w.score >= 100;
+    const cls = 'window-card' + (isPerfect?' perfect':w.score>=70?' good':'');
+    const resTags = (w.vsDay ? w.vsDay.res.slice(0,3) : ['Drone Data','Stamina'])
+      .map(r => `<span class="win-tag${isPerfect?' highlight':''}">${r}</span>`).join('');
+    return `<div class="${cls}">
+      <div class="window-left">
+        <div class="window-when">${w.dayName} · ${w.slot}</div>
+        <div class="window-title">${w.vsDay?w.vsDay.emoji+' '+w.vsDay.name:'🚁 Arms Race Only'}</div>
+        <div class="window-ar">${w.arPhase.emoji} ${w.arPhase.name}</div>
+        <div class="window-resources">${resTags}</div>
+      </div>
+      <div class="window-right">
+        <div class="window-countdown" id="wcd_${i}">—</div>
+        <div><span class="window-badge ${ol.cls}">${ol.text}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+  // Store windows for countdown updates
+  window._wins = wins;
+}
+
+function updateWindowCountdowns() {
+  if (!window._wins) return;
+  const st = getServerTime();
+  const secs = secsUntilSlotEnd();
+  window._wins.forEach((w, i) => {
+    const el = document.getElementById('wcd_'+i);
+    if (!el) return;
+    const total = (w.secsUntil - (4*3600 - secs) + secs);
+    const remaining = Math.max(0, w.secsUntil - (4*3600 - secs));
+    el.textContent = 'over ' + fmtMin(remaining/60);
+  });
 }
 
 function renderOverlapTable() {
-  const wd = getServerDay();
-  const st = getServerTime();
-
+  const wd = getServerTime().getDay();
   const rows = [
-    { wd: 1, label: 'Monday' },
-    { wd: 2, label: 'Tuesday' },
-    { wd: 3, label: 'Wednesday' },
-    { wd: 4, label: 'Thursday' },
-    { wd: 5, label: 'Friday' },
-    { wd: 6, label: 'Saturday' },
-    { wd: 0, label: 'Sunday' },
+    {wd:1,label:'Maandag'},{wd:2,label:'Dinsdag'},{wd:3,label:'Woensdag'},
+    {wd:4,label:'Donderdag'},{wd:5,label:'Vrijdag'},{wd:6,label:'Zaterdag'},
+    {wd:0,label:'Zondag'},
   ];
-
-  return rows.map(r => {
-    const vsDay = r.wd === 0 ? null : VS_DAYS.find(d => d.weekday === r.wd);
-    const isToday = r.wd === wd;
-
-    const sched = AR_SCHEDULE[r.wd];
-    const slot1Phase = AR_PHASE[sched[1]]; // 6AM-10AM
-    const slot3Phase = AR_PHASE[sched[3]]; // 2PM-6PM
-    const slot5Phase = AR_PHASE[sched[5]]; // 10PM-2AM
-
-    // Best overlap for this day
-    const scores = [slot1Phase, slot3Phase, slot5Phase].map(p => calcOverlapScore(vsDay, p));
-    const bestScore = Math.max(...scores);
-    const ol = getOverlapLabel(bestScore);
-
-    const bestResource = vsDay ? vsDay.resources[0] : 'Drone Data';
-
-    return `<tr class="${isToday ? 'current-row' : ''}">
-      <td><span class="day-label ${isToday ? 'today' : ''}">${r.label}${isToday ? ' ◀' : ''}</span></td>
-      <td>${vsDay ? vsDay.emoji + ' ' + vsDay.name : '<span style="color:var(--text-dim)">– AR Only</span>'}</td>
-      <td>${renderArTag(sched[1])}</td>
-      <td>${renderArTag(sched[3])}</td>
-      <td>${renderArTag(sched[5])}</td>
-      <td><span class="overlap-badge ${ol.cls}">${ol.text}</span></td>
-      <td style="color:var(--text-secondary);font-size:11px;">${bestResource}</td>
+  document.getElementById('overlapBody').innerHTML = rows.map(r => {
+    const vsD = r.wd===0 ? null : VS.find(v=>v.wd===r.wd);
+    const isToday = r.wd===wd;
+    const s1=AR[SCHED[r.wd][1]], s3=AR[SCHED[r.wd][3]], s5=AR[SCHED[r.wd][5]];
+    const best = Math.max(overlapScore(vsD,s1), overlapScore(vsD,s3), overlapScore(vsD,s5));
+    const ol = overlapLabel(best);
+    const arTag = p => `<span class="ar-tag ${p.cls}">${p.emoji} ${p.name}</span>`;
+    return `<tr class="${isToday?'today-row':''}">
+      <td><span class="day-cell ${isToday?'today':''}">${r.label}${isToday?' ◀':''}</span></td>
+      <td>${vsD?vsD.emoji+' '+vsD.name:'<span style="color:var(--t4)">— AR Only</span>'}</td>
+      <td>${arTag(s1)}</td><td>${arTag(s3)}</td><td>${arTag(s5)}</td>
+      <td><span class="ol-badge ${ol.cls}">${ol.text}</span></td>
+      <td style="font-size:11px;color:var(--t3)">${vsD?vsD.res[0]:'Drone Data'}</td>
     </tr>`;
   }).join('');
 }
 
-// ═══════════════════════════════════════════════════
-//  STATUS BAR UPDATE
-// ═══════════════════════════════════════════════════
+function renderAlert() {
+  const recs = buildRecs();
+  const wins = getWindows();
+  const isSun = getServerTime().getDay() === 0;
+  const sc = overlapScore(getVsDay(), getArPhaseNow());
+  const strip = document.getElementById('alertStrip');
+  const hasGoodNow = recs.some(r => r.action==='spend' && r.score>=80);
 
-function updateStatusBar() {
-  const st = getServerTime();
-  const wd = st.getDay();
-  const isSunday = wd === 0;
-  const vsDay = getVsDay();
-  const arPhase = getCurrentArPhase();
-  const nextAr = getNextArPhase();
-  const slot = getArSlot(st);
-
-  // Block countdown
-  const slotEndHour = getSlotEndHour(slot);
-  const endDate = new Date(st);
-  if (slotEndHour >= 24) {
-    endDate.setDate(endDate.getDate() + 1);
-    endDate.setHours(slotEndHour - 24, 0, 0, 0);
+  if (!hasGoodNow && wins.length > 0 && !isSun) {
+    const w = wins[0];
+    document.getElementById('alertText').innerHTML =
+      `<strong>Sub-optimaal moment.</strong> ${w.vsDay?.name ?? 'AR fase'} + ${w.arPhase.name} overlap over ~${fmtMin(w.secsUntil/60)} — wacht voor betere AR badges.`;
+    document.getElementById('alertAction').textContent = `+${w.score-sc}% in ${fmtMin(w.secsUntil/60)}`;
+    strip.classList.add('show');
   } else {
-    endDate.setHours(slotEndHour, 0, 0, 0);
-  }
-  const secondsLeft = Math.max(0, Math.floor((endDate - st) / 1000));
-  const totalSlot = 4 * 3600;
-  const progress = ((totalSlot - secondsLeft) / totalSlot * 100).toFixed(1);
-
-  // VS Day
-  document.getElementById('vsDay').textContent = isSunday ? 'SUNDAY' : `Day ${vsDay?.day ?? '–'}`;
-  document.getElementById('vsDayName').textContent = isSunday ? 'Arms Race Only' : (vsDay?.name ?? '–');
-
-  // AR Phase
-  document.getElementById('arPhase').textContent = arPhase ? arPhase.emoji + ' ' + arPhase.name : '–';
-  document.getElementById('arPhaseTime').textContent = `Slot ${slot + 1} / 6`;
-
-  // Block countdown
-  document.getElementById('blockCountdown').textContent = formatCountdown(secondsLeft);
-  document.getElementById('blockProgress').style.width = progress + '%';
-
-  // Next AR
-  document.getElementById('nextArPhase').textContent = nextAr ? nextAr.emoji + ' ' + nextAr.name : '–';
-  document.getElementById('nextArPhaseTime').textContent = 'In ' + formatCountdown(secondsLeft);
-
-  // Efficiency
-  const recs = buildRecommendations();
-  const spendCount = recs.spend.length;
-  const totalCount = Object.values(recs).flat().length;
-  const eff = Math.round((spendCount / totalCount) * 100);
-  document.getElementById('efficiencyScore').textContent = eff + '%';
-  document.getElementById('efficiencySub').textContent = `${spendCount}/${totalCount} optimal`;
-
-  // Best window
-  const windows = getUpcomingWindows();
-  if (windows.length > 0) {
-    const w = windows[0];
-    document.getElementById('nextBestWindow').textContent = w.vsDay ? w.vsDay.short : 'Drone';
-    document.getElementById('nextBestWindowTime').textContent = w.timeLabel;
-  }
-
-  // Mode badge
-  const badge = document.getElementById('modeBadge');
-  if (isSunday) {
-    badge.textContent = 'AR ONLY MODE';
-    badge.className = 'mode-badge ar';
-  } else {
-    badge.textContent = 'VS MODE ACTIVE';
-    badge.className = 'mode-badge vs';
-  }
-
-  // Alert
-  const alertBanner = document.getElementById('alertBanner');
-  const hasGoodSpend = recs.spend.some(r => r.score >= 80);
-  if (!hasGoodSpend && recs.delay.length > 0) {
-    alertBanner.classList.add('visible');
-    document.getElementById('alertTitle').textContent = '⚠️ Sub-optimal spending window — delays recommended';
-    const nextW = windows[0];
-    const timeStr = nextW ? nextW.timeLabel : 'next VS day';
-    document.getElementById('alertBody').textContent = `Resources will provide ${windows[0]?.overlapScore ?? 0}%+ efficiency ${timeStr}. Consider saving.`;
-    document.getElementById('alertLoss').textContent = '–' + (eff < 50 ? 50 - eff : 0) + '% value';
-    document.getElementById('alertGain').textContent = nextW ? `+${nextW.overlapScore - eff}% in ${nextW.timeLabel}` : '';
-  } else {
-    alertBanner.classList.remove('visible');
+    strip.classList.remove('show');
   }
 }
 
-// ═══════════════════════════════════════════════════
-//  CLOCK & FULL RENDER
-// ═══════════════════════════════════════════════════
-
-let lastDay = -1;
-let lastSlot = -1;
-
-function updateClock() {
-  const now = new Date();
-  const st = getServerTime();
-
-  document.getElementById('clockDisplay').textContent = now.toLocaleTimeString('en-US', {hour12: false});
-  document.getElementById('dateDisplay').textContent = now.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
-  document.getElementById('serverTimeDisplay').textContent = 'SERVER ' + st.toLocaleTimeString('en-US', {hour12: false, hour:'2-digit', minute:'2-digit'});
-
-  // Calculate local reset time
-  const offset = getServerOffset();
-  const resetHourServer = 2; // 2AM server
-  const resetHourLocal = ((resetHourServer - offset) + 24) % 24;
-  document.getElementById('localResetTime').textContent = `${String(resetHourLocal).padStart(2,'0')}:00 local`;
-
-  // Detect slot/day change for re-render
-  const currentSlot = getArSlot(st);
-  const currentDay = st.getDay();
-  if (currentDay !== lastDay || currentSlot !== lastSlot) {
-    lastDay = currentDay;
-    lastSlot = currentSlot;
-    fullRender();
-  }
-
-  updateStatusBar();
+function renderResetTime() {
+  // Server reset = 2:00 AM server time = 4:00 AM local when offset=0
+  // local reset hour = 2 - offset
+  const resetLocal = ((2 - settings.offset) + 24) % 24;
+  document.getElementById('resetTimeLocal').textContent = String(resetLocal).padStart(2,'0')+':00';
 }
+
+// ═══════════════════════════════════════
+//  FULL RENDER & CLOCK LOOP
+// ═══════════════════════════════════════
 
 function fullRender() {
-  document.getElementById('vsWeek').innerHTML = renderVsWeek();
-  document.getElementById('arPhaseBar').innerHTML = renderArPhaseBar();
-  document.getElementById('commandGrid').innerHTML = renderCommandGrid();
-  document.getElementById('timelineGrid').innerHTML = renderTimeline();
-  document.getElementById('overlapBody').innerHTML = renderOverlapTable();
+  renderHero();
+  renderStatusStrip();
+  renderVsWeek();
+  renderArTimeline();
+  renderWindows();
+  renderOverlapTable();
+  renderAlert();
+  renderResetTime();
 }
 
-// Init
-fullRender();
-setInterval(updateClock, 1000);
-updateClock();
+let _lastSlot = -1, _lastDay = -1;
 
-// Re-render on config change
-document.getElementById('serverOffset').addEventListener('change', () => {
-  fullRender();
-  updateClock();
-});
+function tick() {
+  const now = new Date();
+  const st = getServerTime();
+  document.getElementById('clockEl').textContent = now.toLocaleTimeString('en-GB');
+  document.getElementById('dateEl').textContent   = now.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});
+  document.getElementById('modePill').textContent = st.getDay()===0 ? 'AR ONLY' : 'VS ACTIEF';
+  document.getElementById('modePill').className   = 'mode-pill '+(st.getDay()===0?'mode-ar':'mode-vs');
+
+  const slot = getSlot(st);
+  const day  = st.getDay();
+  if (slot !== _lastSlot || day !== _lastDay) { _lastSlot=slot; _lastDay=day; fullRender(); }
+
+  // Fast updates (countdown only)
+  const secs = secsUntilSlotEnd();
+  document.getElementById('statCountdown').textContent = fmt(secs);
+  const progress = ((4*3600-secs)/(4*3600)*100).toFixed(1);
+  document.getElementById('statProgress').style.width = progress+'%';
+  updateWindowCountdowns();
+}
+
+// Boot
+loadSettings();
+fullRender();
+if (settings.notif && Notification.permission==='granted') startNotifCheck();
+setInterval(tick, 1000);
+tick();
 </script>
 </body>
 </html>
