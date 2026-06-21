@@ -212,7 +212,9 @@ body {
 
 /* ── AR tags ── */
 .ar-tag {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   padding: 2px 7px;
   border-radius: 4px;
   font-size: 9px;
@@ -241,8 +243,47 @@ body {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
-.lw-shimmer-bar {
-  background: linear-gradient(90deg, var(--green) 0%, var(--green2) 50%, var(--green) 100%);
-  background-size: 200% 100%;
-  animation: lw-shimmer 3s ease infinite;
+.lw-icon {
+  image-rendering: auto;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+  vertical-align: middle;
 }
+
+.lw-icon-lg {
+  width: 28px;
+  height: 28px;
+}
+
+.lw-icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+.lw-icon-frame {
+  background: linear-gradient(135deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 100%);
+  border: 1px solid var(--border-gold);
+  border-radius: 6px;
+  padding: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lw-vs-banner {
+  background: linear-gradient(90deg, rgba(200,150,12,0.12) 0%, transparent 100%);
+  border-left: 3px solid var(--gold);
+  padding: 8px 12px;
+  margin: 8px 14px 0;
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lw-vs-banner img {
+  width: 48px;
+  height: auto;
+  border-radius: 4px;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+}
+

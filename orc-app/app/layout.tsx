@@ -20,6 +20,10 @@ export const metadata: Metadata = {
   title: "ORC — Optimization Resource Commander",
   description: "Last War: Survival — maximaliseer beloningen via VS + Arms Race overlap optimalisatie",
   keywords: ["Last War", "Victory Showdown", "Arms Race", "optimization", "ORC"],
+  icons: {
+    icon: "/icons/favicon.png",
+    apple: "/icons/favicon.png",
+  },
 };
 
 export const viewport: Viewport = {
