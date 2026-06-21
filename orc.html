@@ -4,45 +4,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ORC — Optimization Resource Commander</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg0: #080b0f;
-  --bg1: #0d1219;
-  --bg2: #111822;
-  --bg3: #16202e;
-  --bg4: #1c2a3a;
-  --border: #1e2d3f;
-  --border2: #253545;
-  --gold: #d4900a;
-  --gold2: #f0b030;
-  --gold3: #ffd060;
-  --goldglow: rgba(212,144,10,0.18);
-  --green: #0e8a3a;
-  --green2: #18c055;
-  --greenglow: rgba(24,192,85,0.15);
-  --blue: #0e5fa0;
-  --blue2: #2090e0;
-  --blueglow: rgba(32,144,224,0.15);
-  --orange: #c04a08;
-  --orange2: #f07020;
-  --orangeglow: rgba(240,112,32,0.15);
-  --red: #a01818;
-  --red2: #e03030;
-  --redglow: rgba(224,48,48,0.15);
-  --purple: #5a28b0;
-  --purple2: #9060f0;
-  --purpleglow: rgba(144,96,240,0.15);
-  --t1: #ccd8e8;
-  --t2: #7a9ab8;
-  --t3: #3d5570;
-  --t4: #243040;
-  --ff: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --bg0: #0a120c;
+  --bg1: #101a12;
+  --bg2: #162218;
+  --bg3: #1c2c1e;
+  --bg4: #243828;
+  --border: #2e4432;
+  --border2: #3a5240;
+  --border-gold: rgba(200, 150, 12, 0.45);
+  --gold: #c8960c;
+  --gold2: #f0c030;
+  --gold3: #ffe070;
+  --goldglow: rgba(240, 192, 48, 0.22);
+  --green: #2a8a3a;
+  --green2: #5cd85a;
+  --greenglow: rgba(92, 216, 90, 0.18);
+  --blue: #1a6a8a;
+  --blue2: #40b0e0;
+  --blueglow: rgba(64, 176, 224, 0.15);
+  --orange: #c06010;
+  --orange2: #e88020;
+  --orangeglow: rgba(232, 128, 32, 0.15);
+  --red: #a02818;
+  --red2: #e04030;
+  --redglow: rgba(224, 64, 48, 0.15);
+  --purple: #6840a8;
+  --purple2: #a070e8;
+  --purpleglow: rgba(160, 112, 232, 0.15);
+  --t1: #e8dcc8;
+  --t2: #b0a080;
+  --t3: #706050;
+  --t4: #443830;
+  --ff-display: 'Bebas Neue', Impact, sans-serif;
+  --ff: 'Barlow', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
 body {
-  background: var(--bg0);
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(200, 150, 12, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(42, 138, 58, 0.05) 0%, transparent 50%),
+    var(--bg0);
   color: var(--t1);
   font-family: var(--ff);
   min-height: 100vh;
@@ -52,8 +60,9 @@ body {
 
 /* ── TOPBAR ── */
 .topbar {
-  background: var(--bg1);
-  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #1a2818 0%, var(--bg1) 100%);
+  border-bottom: 2px solid var(--border-gold);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
   padding: 10px 16px;
   display: flex;
   align-items: center;
@@ -65,15 +74,25 @@ body {
 .logo { display: flex; align-items: center; gap: 10px; }
 .logo-mark {
   width: 36px; height: 36px;
-  background: var(--bg3);
-  border: 1px solid var(--gold);
-  border-radius: 6px;
+  background: linear-gradient(135deg, var(--bg4) 0%, var(--bg3) 100%);
+  border: 2px solid var(--gold);
+  border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
   font-size: 18px;
   flex-shrink: 0;
-  box-shadow: 0 0 12px var(--goldglow);
+  box-shadow: 0 0 14px var(--goldglow), inset 0 1px 0 rgba(255,255,255,0.08);
 }
-.logo-name { font-size: 15px; font-weight: 700; color: var(--gold2); letter-spacing: 3px; }
+.logo-name {
+  font-family: var(--ff-display);
+  font-size: 22px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, var(--gold3) 0%, var(--gold2) 45%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8));
+}
 .logo-sub  { font-size: 8px; color: var(--t3); letter-spacing: 2px; text-transform: uppercase; }
 .topbar-clock {
   margin-left: auto;
@@ -82,13 +101,13 @@ body {
   color: var(--t3);
   font-variant-numeric: tabular-nums;
 }
-.topbar-clock .time { font-size: 17px; font-weight: 700; color: var(--blue2); letter-spacing: 1px; display: block; }
+.topbar-clock .time { font-size: 20px; font-family: var(--ff-display); color: var(--gold2); letter-spacing: 0.06em; display: block; }
 .mode-pill {
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 2px;
+  font-size: 11px;
+  font-family: var(--ff-display);
+  letter-spacing: 0.1em;
   white-space: nowrap;
 }
 .mode-vs { background: var(--goldglow); border: 1px solid var(--gold); color: var(--gold2); }
@@ -114,9 +133,13 @@ body {
 }
 .setup-input:focus { border-color: var(--gold); }
 .btn-primary {
-  background: var(--gold); color: #0a0700;
-  border: none; padding: 7px 16px; border-radius: 4px;
-  font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: 1px;
+  background: linear-gradient(180deg, #ffe060 0%, var(--gold2) 40%, var(--gold) 100%);
+  color: #1a1000;
+  border: 1px solid #a07008;
+  padding: 7px 16px; border-radius: 6px;
+  font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.35);
 }
 .btn-primary:active { opacity: 0.8; }
 .btn-secondary {
@@ -129,12 +152,12 @@ body {
 .hero-section { padding: 14px 14px 0; }
 
 .hero-card {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
+  background: linear-gradient(180deg, var(--bg3) 0%, var(--bg2) 100%);
+  border: 1px solid var(--border-gold);
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 12px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.4);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.4) inset, 0 4px 20px rgba(0,0,0,0.35);
 }
 
 .hero-header {
@@ -410,7 +433,7 @@ body {
   <div class="logo">
     <div class="logo-mark">⚔️</div>
     <div>
-      <div class="logo-name">O R C</div>
+      <div class="logo-name">ORC</div>
       <div class="logo-sub">Optimization Resource Commander</div>
     </div>
   </div>

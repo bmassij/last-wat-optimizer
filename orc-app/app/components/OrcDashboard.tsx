@@ -39,10 +39,10 @@ const DAY_FULL   = ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vr
 function olBadge(score: number) {
   const lv = overlapLevel(score);
   const cls =
-    lv === "PERFECT" ? "bg-amber-900/30 border border-amber-500/50 text-amber-300" :
-    lv === "GOED"    ? "bg-green-900/30 border border-green-500/50 text-green-300" :
-                       "bg-slate-800 border border-slate-600/30 text-slate-500";
-  return <span className={`text-[8px] font-bold tracking-widest px-2 py-0.5 rounded-full ${cls}`}>{lv}</span>;
+    lv === "PERFECT" ? "ol-perfect" :
+    lv === "GOED"    ? "ol-good" :
+                       "ol-low";
+  return <span className={`lw-display text-[9px] px-2 py-0.5 rounded-full ${cls}`}>{lv}</span>;
 }
 
 // ── Main Component ───────────────────────────────────────────
@@ -146,27 +146,22 @@ export default function OrcDashboard() {
     <div style={{ background: "var(--bg0)", minHeight: "100vh" }}>
 
       {/* ── TOPBAR ── */}
-      <div style={{ background: "var(--bg1)", borderBottom: "1px solid var(--border)" }}
-        className="sticky top-0 z-50 flex items-center gap-3 px-4 py-2.5">
+      <div className="lw-topbar sticky top-0 z-50 flex items-center gap-3 px-4 py-2.5">
         <div className="flex items-center gap-2.5">
-          <div style={{ background: "var(--bg3)", border: "1px solid var(--gold)", boxShadow: "0 0 12px var(--goldglow)" }}
-            className="w-9 h-9 rounded-md flex items-center justify-center text-lg flex-shrink-0">⚔️</div>
+          <div className="lw-logo-mark w-9 h-9 flex items-center justify-center text-lg flex-shrink-0">⚔️</div>
           <div>
-            <div style={{ color: "var(--gold2)" }} className="font-bold tracking-[3px] text-[15px]">O R C</div>
-            <div style={{ color: "var(--t3)" }} className="text-[8px] tracking-widest uppercase">Optimization Resource Commander</div>
+            <div className="lw-gold-text text-[22px] leading-none">ORC</div>
+            <div className="lw-label text-[8px] mt-0.5">Optimization Resource Commander</div>
           </div>
         </div>
-        <span style={sun
-          ? { background: "var(--blueglow)", border: "1px solid var(--blue2)", color: "var(--blue2)" }
-          : { background: "var(--goldglow)", border: "1px solid var(--gold)", color: "var(--gold2)" }}
-          className="text-[9px] font-bold tracking-[2px] px-3 py-1 rounded-full">
+        <span className={`text-[11px] px-3 py-1 rounded-full ${sun ? "lw-pill-ar" : "lw-pill-vs"}`}>
           {sun ? "AR ONLY" : "VS ACTIEF"}
         </span>
         <div className="ml-auto text-right">
-          <span style={{ color: "var(--blue2)" }} className="font-bold text-[17px] tracking-wide tabular-nums block">
+          <span style={{ color: "var(--gold2)" }} className="lw-display text-[20px] tabular-nums block leading-none">
             {now.toLocaleTimeString("en-GB")}
           </span>
-          <span style={{ color: "var(--t4)" }} className="text-[9px]">
+          <span style={{ color: "var(--t3)" }} className="text-[9px]">
             {now.toLocaleDateString("nl-NL", { weekday: "short", day: "numeric", month: "short" })}
           </span>
         </div>
@@ -176,7 +171,7 @@ export default function OrcDashboard() {
       {showSetup && (
         <div style={{ background: "linear-gradient(135deg, var(--bg2), var(--bg3))", borderBottom: "2px solid var(--gold)" }}
           className="px-4 py-4">
-          <div style={{ color: "var(--gold2)" }} className="font-bold text-[13px] mb-1">⚙️ Eenmalige instelling — kalibreer jouw server</div>
+          <div className="lw-gold-text text-[15px] mb-1">⚙️ Eenmalige instelling — kalibreer jouw server</div>
           <div style={{ color: "var(--t2)" }} className="text-[12px] mb-3">
             Vul de servertijd in die jouw spel nu toont. ORC berekent de timezone offset automatisch.
           </div>
@@ -185,17 +180,13 @@ export default function OrcDashboard() {
             <input
               value={serverInput} onChange={e => setServerInput(e.target.value)}
               placeholder="bv. 14:30" maxLength={5}
-              style={{ background: "var(--bg4)", border: "1px solid var(--border2)", color: "var(--t1)" }}
-              className="px-2 py-1.5 rounded text-[13px] w-20 outline-none"
+              className="lw-input px-2 py-1.5 text-[13px] w-20"
             />
-            <button onClick={calibrate}
-              style={{ background: "var(--gold)", color: "#0a0700" }}
-              className="px-4 py-1.5 rounded text-[12px] font-bold cursor-pointer">
+            <button onClick={calibrate} className="lw-btn-gold px-4 py-1.5 text-[12px]">
               Kalibreer ✓
             </button>
             <button onClick={() => { updateSetting("_setup" as keyof Settings, true); setShowSetup(false); }}
-              style={{ background: "var(--bg4)", border: "1px solid var(--border2)", color: "var(--t2)" }}
-              className="px-3 py-1.5 rounded text-[11px] cursor-pointer">
+              className="lw-btn-secondary px-3 py-1.5 text-[11px]">
               Sla over — reset = 4:00 AM lokaal
             </button>
           </div>
@@ -203,14 +194,13 @@ export default function OrcDashboard() {
       )}
 
       {/* ── CONFIG BAR ── */}
-      <div style={{ background: "var(--bg2)", borderBottom: "1px solid var(--border)" }}
-        className="px-4 py-2 flex items-center gap-3 flex-wrap text-[10px]" style2={{ color: "var(--t3)" }}>
+      <div style={{ background: "var(--bg2)", borderBottom: "1px solid var(--border-gold)", color: "var(--t3)" }}
+        className="px-4 py-2 flex items-center gap-3 flex-wrap text-[10px]">
         <span style={{ color: "var(--t3)" }}>⚙️</span>
         <label style={{ color: "var(--t3)" }}>Server UTC:
           <select value={settings.offset}
             onChange={e => updateSetting("offset", parseInt(e.target.value))}
-            style={{ background: "var(--bg4)", border: "1px solid var(--border2)", color: "var(--t1)" }}
-            className="ml-1.5 px-2 py-1 rounded text-[11px] outline-none cursor-pointer">
+            className="lw-select ml-1.5 px-2 py-1 text-[11px] cursor-pointer">
             {Array.from({ length: 25 }, (_, i) => i - 12).map(o => (
               <option key={o} value={o}>UTC{o >= 0 ? "+" : ""}{o}</option>
             ))}
@@ -219,8 +209,7 @@ export default function OrcDashboard() {
         <label style={{ color: "var(--t3)" }}>AR override:
           <select value={settings.arOverride}
             onChange={e => updateSetting("arOverride", e.target.value)}
-            style={{ background: "var(--bg4)", border: "1px solid var(--border2)", color: "var(--t1)" }}
-            className="ml-1.5 px-2 py-1 rounded text-[11px] outline-none cursor-pointer">
+            className="lw-select ml-1.5 px-2 py-1 text-[11px] cursor-pointer">
             <option value="">Auto (schema)</option>
             <option value="CITY">🏗️ City Building</option>
             <option value="UNIT">⚔️ Unit Progression</option>
@@ -258,26 +247,22 @@ export default function OrcDashboard() {
 
       {/* ── HERO CARD ── */}
       <div className="px-3.5 pt-3">
-        <div style={{ background: "var(--bg2)", border: "1px solid var(--border2)" }} className="rounded-xl overflow-hidden">
+        <div className="lw-panel overflow-hidden">
 
           {/* Header */}
-          <div style={{ borderBottom: "1px solid var(--border)" }} className="px-4 py-2.5 flex items-center gap-2">
-            <span style={{ color: "var(--t3)" }} className="text-[9px] tracking-[2px] uppercase">
+          <div className="lw-panel-header px-4 py-2.5 flex items-center gap-2">
+            <span className="lw-section-title text-[10px]">
               {sun ? "ZONDAG — ARMS RACE ONLY MODE" : sc >= 100 ? "🎯 PERFECT OVERLAP ACTIEF" : sc >= 70 ? "✅ GOED VENSTER ACTIEF" : "COMMAND STATUS"}
             </span>
-            <span className="ml-auto" style={{ color: "var(--t3)" }} className="text-[10px]">
+            <span className="ml-auto text-[10px]" style={{ color: "var(--t3)" }}>
               {vsDay ? `${vsDay.emoji} ${vsDay.name} × ${arPhase.emoji} ${arPhase.name}` : `${arPhase?.emoji} ${arPhase?.name} (geen VS)`}
             </span>
           </div>
 
           <div className="p-4">
             {/* DOE DIT NU */}
-            <div style={{
-              background: "var(--bg3)",
-              border: `1px solid ${sc >= 80 ? "var(--green)" : sc >= 50 ? "var(--gold)" : "var(--border2)"}`,
-              boxShadow: sc >= 80 ? "0 0 20px var(--greenglow)" : sc >= 50 ? "0 0 12px var(--goldglow)" : "none",
-            }} className="rounded-lg p-4 mb-3 relative">
-              <div className="absolute top-2 right-3 text-[8px] font-bold tracking-widest" style={{ color: "var(--green2)", opacity: 0.7 }}>▶ DOE DIT NU</div>
+            <div className={`lw-command-box p-4 mb-3 ${sc >= 80 ? "perfect" : sc >= 50 ? "good" : "low"}`}>
+              <div className="absolute top-2 right-3 lw-display text-[9px]" style={{ color: "var(--green2)", opacity: 0.85 }}>▶ Doe dit nu</div>
               {spendRecs[0] ? (
                 <>
                   <div className="font-semibold text-[13px] mb-1" style={{ color: "var(--t1)" }}>{spendRecs[0].tip || spendRecs[0].reason}</div>
@@ -307,12 +292,12 @@ export default function OrcDashboard() {
                   <span>{sc}%</span>
                 </div>
                 <div style={{ background: "var(--bg4)" }} className="h-1.5 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-700"
+                  <div className={`h-full rounded-full transition-all duration-700 ${sc >= 80 ? "lw-shimmer-bar" : ""}`}
                     style={{
                       width: `${sc}%`,
-                      background: sc >= 80 ? "linear-gradient(90deg, var(--green), var(--green2))"
+                      background: sc >= 80 ? undefined
                                 : sc >= 50 ? "linear-gradient(90deg, var(--gold), var(--gold2))"
-                                : "linear-gradient(90deg, #a01818, var(--red2))",
+                                : "linear-gradient(90deg, var(--red), var(--red2))",
                     }} />
                 </div>
               </div>
@@ -348,10 +333,9 @@ export default function OrcDashboard() {
           { label: "Fase eindigt",  val: formatCountdown(secs),                         sub: "",                                 color: "var(--green2)",  accent: "var(--green2)", progress: true },
           { label: "Volgend venster", val: windows[0] ? (windows[0].vsDay?.short ?? "AR") : "—", sub: windows[0] ? `~${formatDuration(windows[0].secsUntil/60)}` : "—", color: "var(--purple2)", accent: "var(--purple2)" },
         ].map(({ label, val, sub, color, accent, progress }) => (
-          <div key={label} style={{ background: "var(--bg2)", border: "1px solid var(--border)", position: "relative", overflow: "hidden" }} className="rounded-xl p-3">
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }} />
-            <div style={{ color: "var(--t3)" }} className="text-[9px] uppercase tracking-widest mb-1">{label}</div>
-            <div style={{ color }} className="font-bold text-[15px] tabular-nums">{val}</div>
+          <div key={label} style={{ "--accent": accent } as React.CSSProperties} className="lw-stat-card p-3">
+            <div className="lw-label mb-1">{label}</div>
+            <div style={{ color }} className="lw-display text-[18px] tabular-nums leading-none">{val}</div>
             {sub && <div style={{ color: "var(--t3)" }} className="text-[10px] mt-0.5">{sub}</div>}
             {progress && (
               <div style={{ background: "var(--bg4)" }} className="mt-1.5 h-1 rounded-full overflow-hidden">
@@ -366,8 +350,8 @@ export default function OrcDashboard() {
       {/* ── VS WEEK ── */}
       <div className="px-3.5 pt-4">
         <div className="flex items-center gap-2 mb-2.5">
-          <span style={{ color: "var(--t3)" }} className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">Alliance Duel VS — Week</span>
-          <div style={{ background: "var(--border)" }} className="flex-1 h-px" />
+          <span className="lw-section-title">Alliance Duel VS — Week</span>
+          <div className="lw-divider" />
         </div>
         <div className="grid grid-cols-7 gap-1.5">
           {[{wd:1,l:"MA",vs:VS_DAYS[0]},{wd:2,l:"DI",vs:VS_DAYS[1]},{wd:3,l:"WO",vs:VS_DAYS[2]},
@@ -397,8 +381,8 @@ export default function OrcDashboard() {
       {/* ── AR TIMELINE ── */}
       <div className="px-3.5 pt-4">
         <div className="flex items-center gap-2 mb-2.5">
-          <span style={{ color: "var(--t3)" }} className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">Arms Race — Vandaag</span>
-          <div style={{ background: "var(--border)" }} className="flex-1 h-px" />
+          <span className="lw-section-title">Arms Race — Vandaag</span>
+          <div className="lw-divider" />
         </div>
         <div className="flex gap-1.5 overflow-x-auto pb-1">
           {AR_SCHEDULE[st.getDay()].map((key, s) => {
@@ -428,8 +412,8 @@ export default function OrcDashboard() {
       {/* ── UPCOMING WINDOWS ── */}
       <div className="px-3.5 pt-4">
         <div className="flex items-center gap-2 mb-2.5">
-          <span style={{ color: "var(--t3)" }} className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">Komende optimale vensters — 72u</span>
-          <div style={{ background: "var(--border)" }} className="flex-1 h-px" />
+          <span className="lw-section-title">Komende optimale vensters — 72u</span>
+          <div className="lw-divider" />
         </div>
         <div className="flex flex-col gap-2">
           {windows.length === 0 ? (
@@ -466,10 +450,10 @@ export default function OrcDashboard() {
       {/* ── OVERLAP TABLE ── */}
       <div className="px-3.5 pt-4 pb-6">
         <div className="flex items-center gap-2 mb-2.5">
-          <span style={{ color: "var(--t3)" }} className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">VS × AR Overlap Matrix</span>
-          <div style={{ background: "var(--border)" }} className="flex-1 h-px" />
+          <span className="lw-section-title">VS × AR Overlap Matrix</span>
+          <div className="lw-divider" />
         </div>
-        <div style={{ background: "var(--bg2)", border: "1px solid var(--border)" }} className="rounded-xl overflow-hidden overflow-x-auto">
+        <div className="lw-panel overflow-hidden overflow-x-auto">
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border)" }}>
