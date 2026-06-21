@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg0: #080b0f;
+  --bg1: #0d1219;
+  --bg2: #111822;
+  --bg3: #16202e;
+  --bg4: #1c2a3a;
+  --border: #1e2d3f;
+  --border2: #253545;
+  --gold: #d4900a;
+  --gold2: #f0b030;
+  --gold3: #ffd060;
+  --goldglow: rgba(212,144,10,0.18);
+  --green: #0e8a3a;
+  --green2: #18c055;
+  --greenglow: rgba(24,192,85,0.15);
+  --blue: #0e5fa0;
+  --blue2: #2090e0;
+  --blueglow: rgba(32,144,224,0.15);
+  --orange2: #f07020;
+  --red2: #e03030;
+  --redglow: rgba(224,48,48,0.15);
+  --purple2: #9060f0;
+  --purpleglow: rgba(144,96,240,0.15);
+  --t1: #ccd8e8;
+  --t2: #7a9ab8;
+  --t3: #3d5570;
+  --t4: #243040;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg0);
+  color: var(--t1);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+.blink { animation: blink 2s infinite; }
+
+.ar-tag { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 9px; font-weight: 600; white-space: nowrap; }
+.t-build { background: rgba(32,144,224,0.1); color: var(--blue2); border: 1px solid rgba(32,144,224,0.2); }
+.t-unit  { background: rgba(240,112,32,0.1); color: var(--orange2); border: 1px solid rgba(240,112,32,0.2); }
+.t-tech  { background: rgba(24,192,85,0.1); color: var(--green2); border: 1px solid rgba(24,192,85,0.2); }
+.t-drone { background: rgba(144,96,240,0.1); color: var(--purple2); border: 1px solid rgba(144,96,240,0.2); }
+.t-hero  { background: rgba(212,144,10,0.1); color: var(--gold2); border: 1px solid rgba(212,144,10,0.2); }
