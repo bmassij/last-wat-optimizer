@@ -1,0 +1,177 @@
+{
+  "categories": [
+    { "id": "vs_ar", "icon": "⚔️", "nl": "VS & Arms Race", "en": "VS & Arms Race", "de": "VS & Arms Race", "fr": "VS & Arms Race", "es": "VS & Arms Race" },
+    { "id": "items", "icon": "🎒", "nl": "Items & Inventory", "en": "Items & Inventory", "de": "Items & Inventar", "fr": "Objets & Inventaire", "es": "Objetos & Inventario" },
+    { "id": "tech", "icon": "🔬", "nl": "Tech & Research", "en": "Tech & Research", "de": "Tech & Forschung", "fr": "Tech & Recherche", "es": "Tech & Investigación" },
+    { "id": "heroes", "icon": "🦸", "nl": "Heroes", "en": "Heroes", "de": "Helden", "fr": "Héros", "es": "Héroes" },
+    { "id": "troops", "icon": "⚔️", "nl": "Troepen & HQ", "en": "Troops & HQ", "de": "Truppen & HQ", "fr": "Troupes & QG", "es": "Tropas & HQ" },
+    { "id": "builds", "icon": "🏗️", "nl": "Build Order", "en": "Build Order", "de": "Build Order", "fr": "Ordre de construction", "es": "Orden de construcción" },
+    { "id": "community", "icon": "💬", "nl": "Community Tips", "en": "Community Tips", "de": "Community-Tipps", "fr": "Conseils communauté", "es": "Consejos comunidad" }
+  ],
+  "articles": [
+    {
+      "id": "triple-dip",
+      "category": "vs_ar",
+      "impact": "hoog",
+      "title": { "nl": "Triple-dip: VS + AR + completion", "en": "Triple-dip: VS + AR + completion", "de": "Triple-Dip: VS + AR + Abschluss", "fr": "Triple-dip : VS + AR + achèvement", "es": "Triple-dip: VS + AR + finalización" },
+      "body": {
+        "nl": "De hoogste opbrengst in Last War: voltooi een taak (bouw/research/training) tijdens de JUISTE VS-dag EN de matchende Arms Race-fase. Voorbeeld: Tech Centre upgrade claimen op Woensdag (Age of Science) tijdens Tech Research AR-slot = VS punten + AR badges + power boost tegelijk.\n\nBron: lastwarvault.com, csmit195.com, Reddit r/LastWarMobileGame",
+        "en": "Highest yield in Last War: complete a task (build/research/training) on the RIGHT VS day AND matching Arms Race phase. Example: claim Tech Centre upgrade on Wednesday (Age of Science) during Tech Research AR slot = VS points + AR badges + power boost at once.\n\nSources: lastwarvault.com, csmit195.com, Reddit r/LastWarMobileGame"
+      },
+      "sources": ["lastwarvault.com", "csmit195.com", "reddit.com/r/LastWarMobileGame"]
+    },
+    {
+      "id": "unwrap-backpack",
+      "category": "items",
+      "impact": "hoog",
+      "title": { "nl": "Rugzak: pas UITPAKKEN op het juiste moment", "en": "Backpack: only UNWRAP at the right moment", "de": "Rucksack: erst zum richtigen Zeitpunkt AUSPACKEN", "fr": "Sac à dos : DÉBALLER au bon moment", "es": "Mochila: DESENVUELVE en el momento correcto" },
+      "body": {
+        "nl": "Voltooide gebouwen en research zitten in je inventory/rugzak. Punten tellen pas als je ze OPENT/CLAIMT — niet wanneer ze klaar zijn. Houd upgrades wrapped tot VS Bouwen of Age of Science + matchende AR-fase.\n\nCommunity: Gamoria forum, Last War Vault",
+        "en": "Completed buildings and research sit in your inventory/backpack. Points only count when you OPEN/CLAIM them — not when they finish. Keep upgrades wrapped until VS Building or Age of Science + matching AR phase.\n\nCommunity: Gamoria forum, Last War Vault"
+      },
+      "sources": ["forum.gamoria.com", "lastwarvault.com"]
+    },
+    {
+      "id": "stamina-drone",
+      "category": "vs_ar",
+      "impact": "hoog",
+      "title": { "nl": "Stamina alleen tijdens Drone Boost", "en": "Stamina only during Drone Boost", "de": "Ausdauer nur während Drone Boost", "fr": "Endurance seulement pendant Drone Boost", "es": "Resistencia solo durante Drone Boost" },
+      "body": {
+        "nl": "De #1 AR-lek: stamina verbranden buiten Drone Boost. Radar missies, rallies en PvP-stamina leveren AR badges alleen optimaal tijdens Drone Boost fase. Bewaar stamina op Ma/Di/Do of gebruik op Radar/Combat VS-dagen binnen Drone slots.\n\nBron: lootbar.gg, lastwarvault.com",
+        "en": "The #1 AR leak: burning stamina outside Drone Boost. Radar missions, rallies and PvP stamina only score AR badges optimally during Drone Boost phase. Save stamina Mon/Tue/Thu or use on Radar/Combat VS days within Drone slots.\n\nSource: lootbar.gg, lastwarvault.com"
+      },
+      "sources": ["lootbar.gg", "lastwarvault.com"]
+    },
+    {
+      "id": "mastery-first",
+      "category": "tech",
+      "impact": "hoog",
+      "title": { "nl": "Mastery vóór Tactical Weapon", "en": "Mastery before Tactical Weapon", "de": "Meisterschaft vor Tactical Weapon", "fr": "Maîtrise avant Arme tactique", "es": "Maestría antes de Arma táctica" },
+      "body": {
+        "nl": "F2P en low-spenders: voltooi eerst Mastery Research tree (~60%+). Tactical Weapon lijkt aantrekkelijk maar Mastery geeft permanente combat stats. Claim research altijd op Age of Science VS-dag.\n\nBron: community guides, lastwartutorial.com",
+        "en": "F2P and low spenders: complete Mastery Research tree first (~60%+). Tactical Weapon looks attractive but Mastery gives permanent combat stats. Always claim research on Age of Science VS day.\n\nSource: community guides, lastwartutorial.com"
+      },
+      "sources": ["lastwartutorial.com"]
+    },
+    {
+      "id": "hero-focus",
+      "category": "heroes",
+      "impact": "hoog",
+      "title": { "nl": "Focus 1 DPS hero — niet spreiden", "en": "Focus 1 DPS hero — don't spread XP", "de": "Fokus auf 1 DPS-Held", "fr": "Concentrez 1 héros DPS", "es": "Enfoca 1 héroe DPS" },
+      "body": {
+        "nl": "Verspreid Hero XP NOOIT gelijk over alle heroes. Max eerst 1 DPS (meta 2025-26: Kimberly, Williams, DVA, Schuyler). Gebruik Hero XP/tickets op Train Heroes VS-dag + Hero Advancement AR-fase.\n\nBron: Reddit, Gamoria",
+        "en": "NEVER spread Hero XP evenly across heroes. Max one DPS first (2025-26 meta: Kimberly, Williams, DVA, Schuyler). Use Hero XP/tickets on Train Heroes VS day + Hero Advancement AR phase.\n\nSource: Reddit, Gamoria"
+      },
+      "sources": ["forum.gamoria.com"]
+    },
+    {
+      "id": "diamond-priority",
+      "category": "items",
+      "impact": "hoog",
+      "title": { "nl": "Diamond prioriteit", "en": "Diamond spending priority", "de": "Diamant-Priorität", "fr": "Priorité des diamants", "es": "Prioridad de diamantes" },
+      "body": {
+        "nl": "Volgorde: VIP level → 2e builder slot → shields (8h/24h) → speedups op overlap → packs. VIP en builder geven permanente groei. Shields beschermen je voorraad tijdens grote speedup sessies.\n\nBron: community consensus",
+        "en": "Order: VIP level → 2nd builder slot → shields (8h/24h) → speedups on overlap → packs. VIP and builder give permanent growth. Shields protect stock during big speedup sessions.\n\nSource: community consensus"
+      },
+      "sources": ["lastwarvault.com"]
+    },
+    {
+      "id": "hq-rush",
+      "category": "troops",
+      "impact": "hoog",
+      "title": { "nl": "Rush HQ niet te snel", "en": "Don't rush HQ too fast", "de": "HQ nicht zu schnell hochstufen", "fr": "Ne montez pas le QG trop vite", "es": "No subas HQ demasiado rápido" },
+      "body": {
+        "nl": "HQ level bepaalt troepen-tier (T5 pas na HQ 30+). Hogere HQ = groter doelwit voor PvP. Train troepen mee met HQ groei. Gebruik Base Expansion VS-dag voor grote constructie completions.\n\nBron: mixcliq.com, community",
+        "en": "HQ level gates troop tier (T5 only after HQ 30+). Higher HQ = bigger PvP target. Train troops alongside HQ growth. Use Base Expansion VS day for big construction completions.\n\nSource: mixcliq.com"
+      },
+      "sources": ["mixcliq.com"]
+    },
+    {
+      "id": "phase-chests",
+      "category": "vs_ar",
+      "impact": "medium",
+      "title": { "nl": "Claim Phase Chests elke fase", "en": "Claim Phase Chests every phase", "de": "Phase Chests jede Phase abholen", "fr": "Réclamez les coffres de phase", "es": "Reclama cofres de fase" },
+      "body": {
+        "nl": "AR Phase Chests claimen NIET automatisch. Streef naar minstens chest 2 per fase (≈18 badges/dag voor Gold Daily). Push voor chest 3 als je competitief wilt ranken.\n\nBron: lastwarvault.com",
+        "en": "AR Phase Chests do NOT auto-claim. Aim for at least chest 2 per phase (~18 badges/day for Gold Daily). Push for chest 3 if ranking competitively.\n\nSource: lastwarvault.com"
+      },
+      "sources": ["lastwarvault.com"]
+    },
+    {
+      "id": "slot-swap",
+      "category": "vs_ar",
+      "impact": "medium",
+      "title": { "nl": "Slot Swap — alleen voor noodgevallen", "en": "Slot Swap — emergencies only", "de": "Slot Swap — nur im Notfall", "fr": "Échange de créneau — urgences seulement", "es": "Intercambio de ranura — solo emergencias" },
+      "body": {
+        "nl": "Je krijgt 1 slot swap per dag. Gebruik reactief (gemiste fase, verkeerde planning) — niet proactief. Swap alleen toekomstige slots.\n\nBron: lastwarvault.com",
+        "en": "You get 1 slot swap per day. Use reactively (missed phase, wrong planning) — not proactively. Swap future slots only.\n\nSource: lastwarvault.com"
+      },
+      "sources": ["lastwarvault.com"]
+    },
+    {
+      "id": "sunday-hamster",
+      "category": "community",
+      "impact": "medium",
+      "title": { "nl": "Zondag = hamsterdag", "en": "Sunday = stockpile day", "de": "Sonntag = Hamstertag", "fr": "Dimanche = jour de réserve", "es": "Domingo = día de reserva" },
+      "body": {
+        "nl": "Geen VS op zondag — alleen Arms Race. Spaar speedups, doe drone runs tijdens Drone Boost, bereid inventory voor op Maandag Radar Training.\n\nBron: csmit195.com, community",
+        "en": "No VS on Sunday — Arms Race only. Save speedups, do drone runs during Drone Boost, prep inventory for Monday Radar Training.\n\nSource: csmit195.com"
+      },
+      "sources": ["csmit195.com"]
+    },
+    {
+      "id": "item-builder-speedup",
+      "category": "items",
+      "impact": "hoog",
+      "title": { "nl": "Builder Speedups — wanneer gebruiken?", "en": "Builder Speedups — when to use?", "de": "Bau-Beschleuniger — wann?", "fr": "Accél. construction — quand?", "es": "Aceler. construcción — ¿cuándo?" },
+      "body": {
+        "nl": "Open inventory → Construction/Boost items. Gebruik alleen als completion IN City Building AR-fase valt, liefst op Base Expansion VS-dag (Dinsdag). Speedup = punten op moment van consumptie als het een completion triggert.\n\nORC tip: check overlap matrix voor perfect venster.",
+        "en": "Open inventory → Construction/Boost items. Use only if completion lands IN City Building AR phase, ideally on Base Expansion VS day (Tuesday). Speedup points apply at consumption when triggering completion.\n\nORC tip: check overlap matrix for perfect window."
+      },
+      "sources": ["lastwartutorial.com"]
+    },
+    {
+      "id": "item-science-speedup",
+      "category": "items",
+      "impact": "hoog",
+      "title": { "nl": "Science Speedups — wanneer?", "en": "Science Speedups — when?", "de": "Forschungs-Beschleuniger", "fr": "Accél. recherche", "es": "Aceler. investigación" },
+      "body": {
+        "nl": "Bewaar in inventory tot Woensdag Age of Science + Tech Research AR-slot. Kleine speedups eerst voor meerdere completion triggers (community tip mixcliq.com).",
+        "en": "Save in inventory until Wednesday Age of Science + Tech Research AR slot. Use small speedups first for multiple completion triggers (community tip mixcliq.com)."
+      },
+      "sources": ["mixcliq.com"]
+    },
+    {
+      "id": "item-drone-data",
+      "category": "items",
+      "impact": "medium",
+      "title": { "nl": "Drone Data / Drone Parts", "en": "Drone Data / Drone Parts", "de": "Drohnen-Daten", "fr": "Données drone", "es": "Datos de dron" },
+      "body": {
+        "nl": "Drone Center → Data Training. Alleen spenderen tijdens Drone Boost AR-fase. Combineer met Radar Training (Ma) of Enemy Buster (Za) VS voor dubbele waarde.",
+        "en": "Drone Center → Data Training. Only spend during Drone Boost AR phase. Combine with Radar Training (Mon) or Enemy Buster (Sat) VS for double value."
+      },
+      "sources": ["lootbar.gg"]
+    },
+    {
+      "id": "build-early",
+      "category": "builds",
+      "impact": "hoog",
+      "title": { "nl": "Early game build prioriteit", "en": "Early game build priority", "de": "Early-Game Build-Priorität", "fr": "Priorité construction early game", "es": "Prioridad construcción early" },
+      "body": {
+        "nl": "1) HQ (gecontroleerd) 2) Barracks/Training 3) Research Center 4) Drone Center 5) Wall. Tweede builder slot ASAP via diamonds/VIP. Nooit grote upgrades finish buiten overlap.",
+        "en": "1) HQ (controlled) 2) Barracks/Training 3) Research Center 4) Drone Center 5) Wall. Second builder slot ASAP via diamonds/VIP. Never finish big upgrades outside overlap."
+      },
+      "sources": ["lastwartutorial.com", "lastwarvault.com"]
+    }
+  ],
+  "itemGuide": [
+    { "id": "builder-speedup", "icon": "/icons/builder-speedup.png", "arKey": "CITY", "vsDay": 2, "keep": true },
+    { "id": "science-speedup", "icon": "/icons/science-speedup.png", "arKey": "TECH", "vsDay": 3, "keep": true },
+    { "id": "training-speedup", "icon": "/icons/training-speedup.png", "arKey": "UNIT", "vsDay": 5, "keep": true },
+    { "id": "hero-exp", "icon": "/icons/hero-exp.png", "arKey": "HERO", "vsDay": 4, "keep": true },
+    { "id": "drone-data", "icon": "/icons/drone-data.png", "arKey": "DRONE", "vsDay": null, "keep": true },
+    { "id": "stamina", "icon": "/icons/stamina.png", "arKey": "DRONE", "vsDay": 6, "keep": true },
+    { "id": "radar", "icon": "/icons/radar.png", "arKey": "DRONE", "vsDay": 1, "keep": false },
+    { "id": "valor-badge", "icon": "/icons/valor-badge.png", "arKey": "any", "vsDay": null, "keep": false }
+  ]
+}
