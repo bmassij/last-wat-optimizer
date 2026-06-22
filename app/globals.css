@@ -659,6 +659,114 @@ body::after {
 }
 .blink { animation: blink 1.5s infinite; }
 
+/* ── Alert dot (!) for important items ── */
+@keyframes lw-alert-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 6px var(--orangeglow), 0 0 12px var(--redglow);
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.88;
+    box-shadow: 0 0 14px var(--goldglow), 0 0 20px var(--orangeglow);
+  }
+}
+
+.lw-alert-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ff7050 0%, #e02010 100%);
+  border: 2px solid #1a0800;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  animation: lw-alert-pulse 1.1s ease-in-out infinite;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+  flex-shrink: 0;
+}
+
+.lw-alert-dot.sm {
+  width: 15px;
+  height: 15px;
+  font-size: 10px;
+}
+
+/* ── Readable modal (dark bg, high contrast) ── */
+.lw-modal-readable {
+  background: linear-gradient(180deg, #121830 0%, #080c18 100%);
+  border: 3px solid rgba(255, 160, 32, 0.55);
+  border-radius: 16px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.lw-modal-readable .lw-modal-title {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: #ffe878;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+  line-height: 1.3;
+}
+
+.lw-modal-readable .lw-modal-body {
+  color: #f2f6ff;
+  font-size: 15px;
+  line-height: 1.7;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+}
+
+.lw-readable-text {
+  color: #eef4ff !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.lw-readable-text-dim {
+  color: #c0d4f0 !important;
+}
+
+/* ── Matrix table readability ── */
+.lw-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.lw-matrix-table th {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #d0e4ff !important;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: rgba(0,0,20,0.35);
+  border-bottom: 2px solid rgba(255,160,32,0.25);
+}
+
+.lw-matrix-table td {
+  padding: 9px 12px;
+  color: #f0f4ff;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.lw-matrix-table tr.lw-matrix-today {
+  background: rgba(255, 160, 32, 0.1);
+}
+
+.lw-matrix-table tr.lw-matrix-today td:first-child {
+  color: var(--gold2);
+  font-weight: 700;
+}
+
 @keyframes lw-shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }

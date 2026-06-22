@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { Lang } from "@/lib/i18n";
-import { callOpenRouterVision, getVisionModelChain } from "@/lib/openrouterVision";
+import { callVisionWithFallback, getVisionModelChain } from "@/lib/openrouterVision";
 import {
   buildVisionSystemPrompt,
   extractJsonFromText,
@@ -59,36 +59,32 @@ export async function POST(req: NextRequest) {
       : "Analyze this Last War inventory screenshot. What do you see? What should the player open NOW vs save for VS/Arms Race overlap?";
 
   const models = getVisionModelChain();
-  const errors: string[] = [];
 
-  for (const model of models) {
-    try {
-      const { content, modelUsed } = await callOpenRouterVision(
-        apiKey,
-        model,
-        systemPrompt,
-        userText,
-        dataUrl,
-      );
+  try {
+    const { content, modelUsed } = await callVisionWithFallback(
+      apiKey,
+      models,
+      systemPrompt,
+      userText,
+      dataUrl,
+    );
 
-      const parsed = sanitizeVisionResult(extractJsonFromText(content));
-      const result: VisionInventoryResult = {
-        ...parsed,
-        modelUsed,
-      };
+    const parsed = sanitizeVisionResult(extractJsonFromText(content));
+    const result: VisionInventoryResult = {
+      ...parsed,
+      modelUsed,
+    };
 
-      return NextResponse.json(result);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      console.error("Vision model failed:", model, msg);
-      errors.push(msg);
-    }
+    return NextResponse.json(result);
+  } catch (e) {
+    console.error("Vision inventory error:", e);
+    const msg = e instanceof Error ? e.message : "Vision analysis failed";
+    return NextResponse.json(
+      {
+        error: `Vision scan mislukt. Probeer opnieuw over een minuut. (${msg.slice(0, 280)})`,
+        triedModels: models,
+      },
+      { status: 502 },
+    );
   }
-
-  return NextResponse.json(
-    {
-      error: `All vision models failed. Tried: ${models.join(", ")}. Last: ${errors[errors.length - 1] ?? "unknown"}`,
-    },
-    { status: 502 },
-  );
 }

@@ -1,10 +1,19 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import type { T, Lang } from "@/lib/i18n";
 import { getItemGuide, buildAdvisorPlan, type AdvisorStep } from "@/lib/knowledgeBase";
 import { getServerTime } from "@/lib/engines";
 import type { VisionInventoryResult } from "@/lib/visionInventory";
+import {
+  loadPlayerProfile,
+  mergeVisionIntoProfile,
+  savePlayerProfile,
+  formatProfileAge,
+  type PlayerProfile,
+} from "@/lib/playerProfile";
+import { compressImageFile } from "@/lib/compressImage";
+import ScreenProfileScanner from "./ScreenProfileScanner";
 import GameIcon from "./GameIcon";
 
 interface Props {
@@ -26,20 +35,7 @@ const ITEM_LABELS: Record<string, Record<Lang, string>> = {
 };
 
 function readFileAsBase64(file: File): Promise<{ base64: string; mimeType: string }> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      const match = result.match(/^data:([^;]+);base64,(.+)$/);
-      if (!match) {
-        reject(new Error("Invalid image data"));
-        return;
-      }
-      resolve({ mimeType: match[1], base64: match[2] });
-    };
-    reader.onerror = () => reject(reader.error ?? new Error("Read failed"));
-    reader.readAsDataURL(file);
-  });
+  return compressImageFile(file);
 }
 
 export default function OrcAdvisor({ t, lang, utcOffset, onOpenTopic }: Props) {
@@ -51,7 +47,24 @@ export default function OrcAdvisor({ t, lang, utcOffset, onOpenTopic }: Props) {
   const [scanning, setScanning] = useState(false);
   const [visionError, setVisionError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [profileMeta, setProfileMeta] = useState<PlayerProfile | null>(null);
   const items = getItemGuide(lang);
+
+  const applyProfile = useCallback((profile: PlayerProfile, latest?: VisionInventoryResult) => {
+    setProfileMeta(profile);
+    setHqLevel(profile.hqLevel);
+    if (profile.inventory.length > 0) setSelected(profile.inventory);
+    if (latest) setVision(latest);
+    const st = getServerTime(utcOffset);
+    if (profile.inventory.length > 0) {
+      setPlan(buildAdvisorPlan({ hqLevel: profile.hqLevel, inventory: profile.inventory }, lang, st));
+    }
+  }, [utcOffset, lang]);
+
+  useEffect(() => {
+    const saved = loadPlayerProfile();
+    if (saved) applyProfile(saved);
+  }, [applyProfile]);
 
   function toggle(id: string) {
     setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
@@ -95,11 +108,9 @@ export default function OrcAdvisor({ t, lang, utcOffset, onOpenTopic }: Props) {
       }
 
       setVision(data);
-      const detected = data.detectedItems.length > 0 ? data.detectedItems : selected;
-      const hq = data.hqLevel ?? hqLevel;
-      if (data.hqLevel) setHqLevel(data.hqLevel);
-      if (data.detectedItems.length > 0) setSelected(data.detectedItems);
-      generate(detected, hq);
+      const merged = mergeVisionIntoProfile(loadPlayerProfile(), data);
+      savePlayerProfile(merged);
+      applyProfile(merged, data);
     } catch {
       setVisionError(t.advisorVisionError);
     } finally {
@@ -109,10 +120,22 @@ export default function OrcAdvisor({ t, lang, utcOffset, onOpenTopic }: Props) {
 
   return (
     <div className="px-3.5 pb-8">
-      <div className="lw-panel p-4 mb-4 mt-3">
+      <ScreenProfileScanner
+        t={t}
+        lang={lang}
+        onProfileUpdate={(profile, latest) => applyProfile(profile, latest)}
+      />
+
+      {profileMeta && (
+        <p className="text-[11px] mb-3 px-1 lw-readable-text-dim">
+          {t.profileUpdated}: {formatProfileAge(profileMeta.updatedAt, lang)}
+        </p>
+      )}
+
+      <div className="lw-panel p-4 mb-4">
         <div className="lw-gold-text text-[16px] mb-1">{t.advisorVisionTitle}</div>
-        <p className="text-[13px] font-medium mb-3" style={{ color: "var(--t2)" }}>{t.advisorVisionDesc}</p>
-        <p className="text-[11px] mb-3 font-medium" style={{ color: "var(--t3)" }}>{t.advisorVisionHint}</p>
+        <p className="text-[13px] font-medium mb-3 lw-readable-text">{t.advisorVisionDesc}</p>
+        <p className="text-[11px] mb-3 lw-readable-text-dim">{t.advisorVisionHint}</p>
 
         <input
           ref={fileRef}
@@ -131,7 +154,7 @@ export default function OrcAdvisor({ t, lang, utcOffset, onOpenTopic }: Props) {
             type="button"
             onClick={() => fileRef.current?.click()}
             disabled={scanning}
-            className="lw-btn-gold py-2.5 px-4 text-[12px] disabled:opacity-60"
+            className="lw-btn-secondary py-2.5 px-4 text-[12px] disabled:opacity-60"
           >
             {scanning ? t.advisorVisionScanning : t.advisorVisionUpload}
           </button>
@@ -150,9 +173,9 @@ export default function OrcAdvisor({ t, lang, utcOffset, onOpenTopic }: Props) {
         )}
 
         {vision && (
-          <div className="mt-4 pt-3 border-t" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+          <div className="mt-4 pt-3 border-t border-white/10">
             {vision.summary && (
-              <p className="text-[12px] font-medium mb-2" style={{ color: "var(--t1)" }}>
+              <p className="text-[12px] font-medium mb-2 lw-readable-text">
                 <span className="lw-label">{t.advisorVisionSummary}: </span>
                 {vision.summary}
               </p>
@@ -172,7 +195,7 @@ export default function OrcAdvisor({ t, lang, utcOffset, onOpenTopic }: Props) {
             {vision.openNowSteps.length > 0 && (
               <div className="mb-2">
                 <div className="lw-label mb-1">{t.advisorVisionOpenNow}</div>
-                <ul className="text-[11px] space-y-1" style={{ color: "var(--t2)" }}>
+                <ul className="text-[11px] space-y-1 lw-readable-text-dim">
                   {vision.openNowSteps.map((step, i) => (
                     <li key={i}>• {step}</li>
                   ))}
@@ -182,7 +205,7 @@ export default function OrcAdvisor({ t, lang, utcOffset, onOpenTopic }: Props) {
             {vision.saveForLater.length > 0 && (
               <div>
                 <div className="lw-label mb-1">{t.advisorVisionSaveLater}</div>
-                <ul className="text-[11px] space-y-1" style={{ color: "var(--t3)" }}>
+                <ul className="text-[11px] space-y-1 lw-readable-text-dim">
                   {vision.saveForLater.map((step, i) => (
                     <li key={i}>• {step}</li>
                   ))}
@@ -195,7 +218,8 @@ export default function OrcAdvisor({ t, lang, utcOffset, onOpenTopic }: Props) {
 
       <div className="lw-panel p-4 mb-4">
         <div className="lw-gold-text text-[16px] mb-1">{t.advisorTitle}</div>
-        <p className="text-[13px] font-medium mb-4" style={{ color: "var(--t2)" }}>{t.advisorDesc}</p>
+        <p className="text-[13px] font-medium mb-4 lw-readable-text">{t.advisorDesc}</p>
+        <p className="text-[11px] mb-3 lw-readable-text-dim">{t.advisorProfileNote}</p>
 
         <label className="block mb-4">
           <span className="lw-label block mb-2">{t.advisorHq}: <strong className="text-white text-[14px]">{hqLevel}</strong></span>
@@ -255,9 +279,9 @@ export default function OrcAdvisor({ t, lang, utcOffset, onOpenTopic }: Props) {
               <div className="flex gap-3">
                 <div className="lw-display text-[20px] leading-none" style={{ color: "var(--gold2)" }}>{i + 1}</div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--t3)" }}>{t.advisorWhen}: {step.when}</div>
+                  <div className="text-[10px] font-bold uppercase tracking-wide lw-readable-text-dim">{t.advisorWhen}: {step.when}</div>
                   <div className="font-bold text-[13px] text-white mt-0.5">{step.action}</div>
-                  <div className="text-[11px] mt-1 font-medium" style={{ color: "var(--t2)" }}>{step.why}</div>
+                  <div className="text-[11px] mt-1 font-medium lw-readable-text-dim">{step.why}</div>
                   <div className="mt-2 lw-res-pill text-[9px] inline-block">{t.advisorOpenGame}: {step.openInGame}</div>
                 </div>
               </div>

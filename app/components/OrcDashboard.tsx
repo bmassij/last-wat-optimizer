@@ -13,6 +13,8 @@ import GameIcon from "./GameIcon";
 import InfoModal from "./InfoModal";
 import InfoHub from "./InfoHub";
 import OrcAdvisor from "./OrcAdvisor";
+import AlertDot from "./AlertDot";
+import DiscordFeed from "./DiscordFeed";
 import WeekPlanner from "./WeekPlanner";
 import SpeedupCalc from "./SpeedupCalc";
 import TipsTricks from "./TipsTricks";
@@ -50,7 +52,12 @@ function olBadge(score: number, t: T) {
   const lv = overlapLevel(score);
   const cls = lv === "PERFECT" ? "ol-perfect" : lv === "GOED" ? "ol-good" : "ol-low";
   const label = lv === "PERFECT" ? t.perfect : lv === "GOED" ? t.good : t.low;
-  return <span className={`lw-display text-[9px] px-2 py-0.5 rounded-full ${cls}`}>{label}</span>;
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      {lv === "PERFECT" && <AlertDot size="sm" />}
+      <span className={`lw-display text-[10px] px-2.5 py-0.5 rounded-full ${cls}`}>{label}</span>
+    </span>
+  );
 }
 
 type Tab = "dashboard" | "weekplan" | "speedup" | "tips" | "info" | "advisor" | "s1";
@@ -241,7 +248,12 @@ export default function OrcDashboard() {
       {tab === "weekplan" && <WeekPlanner serverDay={st.getDay()} t={t} />}
       {tab === "speedup"  && <SpeedupCalc utcOffset={settings.offset} arOverride={settings.arOverride} t={t} />}
       {tab === "tips"     && <TipsTricks t={t} />}
-      {tab === "info"     && <InfoHub t={t} lang={settings.lang} onOpenArticle={openInfo} />}
+      {tab === "info"     && (
+        <>
+          <DiscordFeed t={t} />
+          <InfoHub t={t} lang={settings.lang} onOpenArticle={openInfo} />
+        </>
+      )}
       {tab === "advisor"  && <OrcAdvisor t={t} lang={settings.lang} utcOffset={settings.offset} onOpenTopic={openInfo} />}
       {tab === "s1"       && <S1Season t={t} />}
 
@@ -250,11 +262,14 @@ export default function OrcDashboard() {
         <>
           {/* VS banner */}
           {!sun && vsDay && (
-            <button type="button" onClick={() => openInfo(`vs-${vsDay.wd}`)} className="lw-vs-banner w-[calc(100%-24px)] text-left cursor-pointer hover:brightness-110 transition-all">
+            <button type="button" onClick={() => openInfo(`vs-${vsDay.wd}`)} className="lw-vs-banner relative w-[calc(100%-24px)] text-left cursor-pointer hover:brightness-110 transition-all">
               <GameIcon src={ICONS.vsBanner} alt="VS" size={48} className="!filter-none rounded" />
               <div className="flex-1">
-                <div className="lw-display text-[11px]" style={{ color: "var(--gold2)" }}>{t.vsBanner} {vsDay.day} <span className="text-[9px] opacity-80">{t.tapForInfo}</span></div>
-                <div className="flex items-center gap-1.5 text-[12px]" style={{ color: "var(--t2)" }}>
+                <div className="lw-display text-[12px] flex items-center gap-2" style={{ color: "var(--gold2)" }}>
+                  {sc >= 100 && <AlertDot size="sm" />}
+                  {t.vsBanner} {vsDay.day} <span className="text-[10px] opacity-90">{t.tapForInfo}</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[13px] lw-readable-text">
                   <GameIcon src={vsDay.icon} alt={vsDay.name} size={18} />
                   <span>{vsDay.name}</span>
                   <span style={{ color: "var(--t4)" }}>·</span>
@@ -322,12 +337,15 @@ export default function OrcDashboard() {
               </div>
               <div className="p-4">
                 {/* DOE DIT NU */}
-                <div className={`lw-command-box p-4 mb-3 ${sc >= 80 ? "perfect" : sc >= 50 ? "good" : "low"}`}>
-                  <div className="absolute top-2 right-3 lw-display text-[9px]" style={{ color: "var(--green2)", opacity: 0.85 }}>{t.doNow}</div>
+                <div className={`lw-command-box p-4 mb-3 relative ${sc >= 80 ? "perfect" : sc >= 50 ? "good" : "low"}`}>
+                  <div className="absolute top-2 right-3 flex items-center gap-1.5">
+                    {sc >= 100 && <AlertDot size="sm" />}
+                    <span className="lw-display text-[10px]" style={{ color: "var(--green2)", opacity: 0.95 }}>{t.doNow}</span>
+                  </div>
                   {spendRecs[0] ? (
                     <>
-                      <div className="font-semibold text-[13px] mb-1" style={{ color: "var(--t1)" }}>{spendRecs[0].tip || spendRecs[0].reason}</div>
-                      <div className="text-[11px] mb-3" style={{ color: "var(--t2)" }}>{spendRecs[0].reason}</div>
+                      <div className="font-bold text-[15px] mb-1.5 lw-readable-text pr-16">{spendRecs[0].tip || spendRecs[0].reason}</div>
+                      <div className="text-[13px] mb-3 lw-readable-text-dim">{spendRecs[0].reason}</div>
                       <div className="flex flex-wrap gap-2">
                         {spendRecs.map(r => (
                           <div key={r.name}
@@ -436,7 +454,7 @@ export default function OrcDashboard() {
                     className={`lw-game-tile px-2 py-2 text-center relative cursor-pointer${isCur ? " current-ar" : isOvl ? " overlap-ar" : ""}`}
                     style={{ minWidth: 70, flex: 1 }}>
                     {isCur && <div className="absolute -top-2 left-1/2 -translate-x-1/2 lw-do-now-badge text-[7px] z-10">{nowWord}</div>}
-                    {isOvl && <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-[7px] font-bold whitespace-nowrap px-1 rounded" style={{ color: "var(--gold2)", background: "var(--bg0)" }}>{t.overlap}</div>}
+                    {isOvl && <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex items-center gap-0.5 z-10"><AlertDot size="sm" /><span className="text-[8px] font-bold whitespace-nowrap px-1 rounded" style={{ color: "var(--gold2)", background: "var(--bg0)" }}>{t.overlap}</span></div>}
                     <div className="flex justify-center mb-1"><GameIcon src={phase.icon} alt={phase.name} size={24}/></div>
                     <div className="text-[8px] font-semibold" style={{ color: isCur ? "var(--blue2)" : isOvl ? "var(--gold2)" : "var(--t2)" }}>{phase.name}</div>
                     <div className="text-[8px] mt-0.5 font-bold" style={{ color: "var(--t3)" }}>{String(SLOT_STARTS[s]).padStart(2,"0")}–{String(SLOT_ENDS[s]%24).padStart(2,"0")}</div>
@@ -457,10 +475,11 @@ export default function OrcDashboard() {
                 ? <div style={{ color: "var(--t4)" }} className="text-[12px] py-3">{t.noWindows}</div>
                 : windows.map((w, i) => (
                   <button key={i} type="button" onClick={() => openInfo("triple-dip")}
-                    className={`lw-window-card px-4 py-3 flex items-center gap-3 w-full text-left cursor-pointer${w.score >= 100 ? " perfect" : w.score >= 70 ? " good" : ""}`}>
+                    className={`lw-window-card px-4 py-3 flex items-center gap-3 w-full text-left cursor-pointer relative${w.score >= 100 ? " perfect" : w.score >= 70 ? " good" : ""}`}>
+                    {w.score >= 100 && <AlertDot className="absolute top-2 right-2" size="sm" />}
                     <div className="flex-1">
-                      <div style={{ color: "var(--t3)" }} className="text-[9px] mb-0.5">{w.dayName} · {w.slotLabel}</div>
-                      <div className="font-bold text-[13px] flex items-center gap-1.5" style={{ color: "var(--t1)" }}>
+                      <div className="text-[10px] mb-0.5 lw-readable-text-dim">{w.dayName} · {w.slotLabel}</div>
+                      <div className="font-bold text-[14px] flex items-center gap-1.5 lw-readable-text">
                         {w.vsDay ? (<><GameIcon src={w.vsDay.icon} alt={w.vsDay.name} size={20}/>{w.vsDay.name}</>) : (<><GameIcon src={ICONS.dronePart} alt="AR" size={20}/>AR Only</>)}
                       </div>
                       <div className="text-[11px] mt-0.5 flex items-center gap-1.5" style={{ color: "var(--t2)" }}><GameIcon src={w.arPhase.icon} alt={w.arPhase.name} size={16}/> {w.arPhase.name}</div>
@@ -486,11 +505,11 @@ export default function OrcDashboard() {
               <div className="lw-divider" />
             </div>
             <div className="lw-panel overflow-hidden overflow-x-auto">
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+              <table className="lw-matrix-table">
                 <thead>
-                  <tr style={{ borderBottom: "1px solid var(--border)" }}>
+                  <tr>
                     {[t.matrixDay, t.matrixTheme, "06–10", "14–18", "22–02", t.matrixOverlap, t.matrixBest].map(h => (
-                      <th key={h} style={{ padding: "8px 10px", textAlign: "left", fontSize: 8, letterSpacing: "1.5px", color: "var(--t4)", textTransform: "uppercase", whiteSpace: "nowrap" }}>{h}</th>
+                      <th key={h}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -503,21 +522,22 @@ export default function OrcDashboard() {
                     const s5p = AR_PHASES[AR_SCHEDULE[wd][5]];
                     const best = Math.max(overlapScore(vsD, s1p), overlapScore(vsD, s3p), overlapScore(vsD, s5p));
                     return (
-                      <tr key={wd} style={{ background: isToday ? "rgba(212,144,10,0.04)" : "transparent", borderBottom: "1px solid rgba(30,45,63,0.5)" }}>
-                        <td style={{ padding: "7px 10px", fontWeight: 600, color: isToday ? "var(--gold2)" : "var(--t1)", whiteSpace: "nowrap" }}>{t.days[wd]}{isToday ? " ◀" : ""}</td>
-                        <td style={{ padding: "7px 10px", color: "var(--t2)", whiteSpace: "nowrap" }}>{vsD ? <span className="inline-flex items-center gap-1"><GameIcon src={vsD.icon} alt={vsD.name} size={16}/>{vsD.name}</span> : <span style={{ color: "var(--t4)" }}>— AR Only</span>}</td>
+                      <tr key={wd} className={isToday ? "lw-matrix-today" : undefined}>
+                        <td className="whitespace-nowrap">{t.days[wd]}{isToday ? " ◀" : ""}</td>
+                        <td className="whitespace-nowrap">{vsD ? <span className="inline-flex items-center gap-1"><GameIcon src={vsD.icon} alt={vsD.name} size={16}/>{vsD.name}</span> : <span className="lw-readable-text-dim">— AR Only</span>}</td>
                         {[s1p, s3p, s5p].map((ph, i) => {
                           const slotKey = AR_SCHEDULE[wd][i === 0 ? 1 : i === 1 ? 3 : 5];
                           return (
-                          <td key={i} style={{ padding: "7px 10px" }}>
+                          <td key={i}>
                             <button type="button" onClick={() => openInfo(`ar-${slotKey}`)} className={`ar-tag ${ph.cls} inline-flex items-center gap-1 cursor-pointer hover:brightness-110`}>
+                              {overlapScore(vsD, ph) >= 100 && <AlertDot size="sm" />}
                               <GameIcon src={ph.icon} alt={ph.name} size={14}/>{ph.name}
                             </button>
                           </td>
                           );
                         })}
-                        <td style={{ padding: "7px 10px" }}>{olBadge(best, t)}</td>
-                        <td style={{ padding: "7px 10px", color: "var(--t3)", fontSize: 11 }}>{vsD ? vsD.res[0] : "Drone Data"}</td>
+                        <td>{olBadge(best, t)}</td>
+                        <td className="lw-readable-text-dim text-[12px]">{vsD ? vsD.res[0] : "Drone Data"}</td>
                       </tr>
                     );
                   })}
