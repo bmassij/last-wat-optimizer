@@ -1,4 +1,6 @@
 /** Free vision models — tested against OpenRouter (Jun 2026). */
+import type { VisionInventoryResult } from "./visionInventory";
+
 export const DEFAULT_VISION_MODELS = [
   "google/gemma-4-26b-a4b-it:free",
   "nvidia/nemotron-nano-12b-v2-vl:free",
@@ -116,20 +118,25 @@ export async function callOpenRouterVision(
   return { content, modelUsed: data.model ?? model };
 }
 
-/** Try models in order; returns first successful parse candidate text. */
+/** Try models in order; returns first response we can parse into a useful result. */
 export async function callVisionWithFallback(
   apiKey: string,
   models: string[],
   systemPrompt: string,
   userText: string,
   dataUrl: string,
-): Promise<{ content: string; modelUsed: string; errors: string[] }> {
+  parse: (text: string) => { result: VisionInventoryResult; useful: boolean },
+): Promise<{ result: VisionInventoryResult; modelUsed: string }> {
   const errors: string[] = [];
 
   for (const model of models) {
     try {
-      const result = await callOpenRouterVision(apiKey, model, systemPrompt, userText, dataUrl);
-      return { ...result, errors };
+      const { content, modelUsed } = await callOpenRouterVision(apiKey, model, systemPrompt, userText, dataUrl);
+      const { result, useful } = parse(content);
+      if (useful) {
+        return { result: { ...result, modelUsed }, modelUsed };
+      }
+      errors.push(`${model}: parsed but no useful data`);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       errors.push(msg);

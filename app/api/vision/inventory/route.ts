@@ -3,8 +3,9 @@ import type { Lang } from "@/lib/i18n";
 import { callVisionWithFallback, getVisionModelChain } from "@/lib/openrouterVision";
 import {
   buildVisionSystemPrompt,
-  extractJsonFromText,
-  sanitizeVisionResult,
+  buildVisionUserText,
+  parseVisionFromModelText,
+  isUsefulVisionResult,
   type VisionInventoryResult,
 } from "@/lib/visionInventory";
 
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: "OPENROUTER_API_KEY not configured on server. Add it in Vercel → Settings → Environment Variables." },
+      { error: "OPENROUTER_API_KEY niet geconfigureerd. Voeg toe in Vercel → Environment Variables." },
       { status: 503 },
     );
   }
@@ -53,35 +54,33 @@ export async function POST(req: NextRequest) {
 
   const dataUrl = `data:${mimeType};base64,${imageBase64.replace(/^data:[^;]+;base64,/, "")}`;
   const systemPrompt = buildVisionSystemPrompt(lang);
-  const userText =
-    lang === "nl"
-      ? "Analyseer deze Last War inventory-screenshot. Wat zie je? Welke items moet de speler NU openen vs bewaren voor VS/Arms Race overlap?"
-      : "Analyze this Last War inventory screenshot. What do you see? What should the player open NOW vs save for VS/Arms Race overlap?";
-
+  const userText = buildVisionUserText(lang);
   const models = getVisionModelChain();
 
   try {
-    const { content, modelUsed } = await callVisionWithFallback(
+    const { result, modelUsed } = await callVisionWithFallback(
       apiKey,
       models,
       systemPrompt,
       userText,
       dataUrl,
+      text => {
+        const result = parseVisionFromModelText(text);
+        return { result, useful: isUsefulVisionResult(result) };
+      },
     );
 
-    const parsed = sanitizeVisionResult(extractJsonFromText(content));
-    const result: VisionInventoryResult = {
-      ...parsed,
-      modelUsed,
-    };
-
-    return NextResponse.json(result);
+    const response: VisionInventoryResult = { ...result, modelUsed };
+    return NextResponse.json(response);
   } catch (e) {
     console.error("Vision inventory error:", e);
     const msg = e instanceof Error ? e.message : "Vision analysis failed";
     return NextResponse.json(
       {
-        error: `Vision scan mislukt. Probeer opnieuw over een minuut. (${msg.slice(0, 280)})`,
+        error: lang === "nl"
+          ? `Vision scan mislukt. Wacht 1 minuut en probeer opnieuw, of kies items handmatig.`
+          : `Vision scan failed. Wait 1 minute and retry, or select items manually.`,
+        detail: msg.slice(0, 280),
         triedModels: models,
       },
       { status: 502 },
