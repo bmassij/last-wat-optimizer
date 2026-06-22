@@ -43,7 +43,14 @@ function olBadge(score: number) {
     lv === "PERFECT" ? "ol-perfect" :
     lv === "GOED"    ? "ol-good" :
                        "ol-low";
-  return <span className={`lw-display text-[9px] px-2 py-0.5 rounded-full ${cls}`}>{lv}</span>;
+  return <span className={`lw-display text-[9px] px-2.5 py-1 rounded-full ${cls}`}>{lv}</span>;
+}
+
+function iconRarity(cls: string) {
+  if (cls === "t-hero") return "legendary";
+  if (cls === "t-drone") return "epic";
+  if (cls === "t-build") return "rare";
+  return "";
 }
 
 // ── Main Component ───────────────────────────────────────────
@@ -145,42 +152,76 @@ export default function OrcDashboard() {
 
   return (
     <div className="min-h-screen relative z-[1]">
+    <div className="lw-game-shell">
 
       {/* ── TOPBAR ── */}
-      <div className="lw-topbar sticky top-0 z-50 flex items-center gap-3 px-4 py-2.5">
-        <div className="flex items-center gap-2.5">
-          <div className="lw-logo-mark w-9 h-9 flex items-center justify-center flex-shrink-0 p-1">
-            <GameIcon src={ICONS.favicon} alt="Last War" size={28} className="!filter-none" />
+      <div className="lw-topbar sticky top-0 z-50">
+        <div className="lw-topbar-inner flex items-center gap-3 px-4 py-3">
+          <div className="flex items-center gap-3">
+            <div className="lw-logo-mark w-11 h-11 flex items-center justify-center flex-shrink-0 p-1">
+              <GameIcon src={ICONS.favicon} alt="Last War" size={32} className="!filter-none" />
+            </div>
+            <div>
+              <div className="flex items-baseline gap-2">
+                <div className="leading-none">
+                  <div className="lw-brand-last">LAST</div>
+                  <div className="lw-brand-war">WAR</div>
+                </div>
+                <div className="lw-gold-text text-[28px] leading-none">ORC</div>
+              </div>
+              <div className="lw-label text-[7px] mt-0.5 opacity-80">Optimization Resource Commander</div>
+            </div>
           </div>
-          <div>
-            <div className="lw-gold-text text-[22px] leading-none">ORC</div>
-            <div className="lw-label text-[8px] mt-0.5">Optimization Resource Commander</div>
+          <span className={`text-[11px] px-3 py-1.5 rounded-full font-bold ${sun ? "lw-pill-ar" : "lw-pill-vs"}`}>
+            {sun ? "AR ONLY" : "VS ACTIEF"}
+          </span>
+          <div className="ml-auto text-right">
+            <span className="lw-game-title text-[22px] tabular-nums block leading-none text-white">
+              {now.toLocaleTimeString("en-GB")}
+            </span>
+            <span style={{ color: "var(--t3)" }} className="text-[9px] font-semibold">
+              {now.toLocaleDateString("nl-NL", { weekday: "short", day: "numeric", month: "short" })}
+            </span>
           </div>
         </div>
-        <span className={`text-[11px] px-3 py-1 rounded-full ${sun ? "lw-pill-ar" : "lw-pill-vs"}`}>
-          {sun ? "AR ONLY" : "VS ACTIEF"}
-        </span>
-        <div className="ml-auto text-right">
-          <span className="lw-display text-[20px] tabular-nums block leading-none" style={{ color: "#fff" }}>
-            {now.toLocaleTimeString("en-GB")}
-          </span>
-          <span style={{ color: "var(--t3)" }} className="text-[9px]">
-            {now.toLocaleDateString("nl-NL", { weekday: "short", day: "numeric", month: "short" })}
-          </span>
-        </div>
+      </div>
+
+      {/* ── AR PHASE NAV (in-game tab bar) ── */}
+      <div className="lw-ar-nav">
+        {AR_SCHEDULE[st.getDay()].map((key, s) => {
+          const phase = AR_PHASES[key];
+          const isCur = s === slot;
+          const isOvl = overlapScore(vsDay, phase) >= 100 && !isCur;
+          return (
+            <div key={s}
+              className={`lw-ar-nav-tile relative${isCur ? " current" : isOvl ? " overlap" : ""}`}>
+              {isCur && <div className="lw-do-now-badge absolute -top-2 left-1/2 -translate-x-1/2 text-[7px] z-10">NU</div>}
+              <span className={`lw-icon-frame ${iconRarity(phase.cls)} block w-fit`}>
+                <GameIcon src={phase.icon} alt={phase.name} size={32} className="!filter-none" />
+              </span>
+              <div className={`lw-display text-[8px] mt-1 leading-tight${isCur ? " text-white" : ""}`}
+                style={{ color: isOvl ? "var(--gold3)" : isCur ? undefined : "var(--t2)" }}>
+                {phase.name}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* ── VS CONTEXT BANNER ── */}
       {!sun && vsDay && (
-        <div className="lw-vs-banner">
-          <GameIcon src={ICONS.vsBanner} alt="Alliance Duel VS" size={48} className="!filter-none rounded" />
+        <div className="lw-vs-banner lw-hero-strip !rounded-2xl !mx-3 !mt-3">
+          <span className={`lw-icon-frame legendary flex-shrink-0`}>
+            <GameIcon src={ICONS.vsBanner} alt="Alliance Duel VS" size={52} className="!filter-none rounded" />
+          </span>
           <div>
-            <div className="lw-display text-[11px]" style={{ color: "var(--gold2)" }}>Alliance Duel VS — Dag {vsDay.day}</div>
-            <div className="flex items-center gap-1.5 text-[12px]" style={{ color: "var(--t2)" }}>
-              <GameIcon src={vsDay.icon} alt={vsDay.name} size={18} />
+            <div className="lw-game-title text-[14px] text-white">Alliance Duel VS — Dag {vsDay.day}</div>
+            <div className="flex items-center gap-2 text-[13px] font-semibold mt-1" style={{ color: "var(--t1)" }}>
+              <span className={`lw-icon-frame ${iconRarity("t-build")}`}>
+                <GameIcon src={vsDay.icon} alt={vsDay.name} size={24} className="!filter-none" />
+              </span>
               <span>{vsDay.name}</span>
-              <span style={{ color: "var(--t4)" }}>·</span>
-              <span>{vsDay.pts} win point{vsDay.pts > 1 ? "s" : ""}</span>
+              <span className="lw-res-pill text-[9px]">{vsDay.pts} WIN PT{vsDay.pts > 1 ? "S" : ""}</span>
             </div>
           </div>
         </div>
@@ -275,17 +316,17 @@ export default function OrcDashboard() {
           <div className="p-4">
             {/* DOE DIT NU */}
             <div className={`lw-command-box p-4 mb-3 ${sc >= 80 ? "perfect" : sc >= 50 ? "good" : "low"}`}>
-              <div className="absolute top-2 right-3 lw-display text-[9px]" style={{ color: "var(--green2)", opacity: 0.85 }}>▶ Doe dit nu</div>
+              <div className="absolute top-2 right-3 lw-do-now-badge">▶ Doe dit nu</div>
               {spendRecs[0] ? (
                 <>
-                  <div className="font-semibold text-[13px] mb-1" style={{ color: "var(--t1)" }}>{spendRecs[0].tip || spendRecs[0].reason}</div>
-                  <div className="text-[11px] mb-3" style={{ color: "var(--t2)" }}>{spendRecs[0].reason}</div>
+                  <div className="lw-game-title text-[15px] mb-1 text-white">{spendRecs[0].tip || spendRecs[0].reason}</div>
+                  <div className="text-[12px] mb-3 font-medium" style={{ color: "var(--t2)" }}>{spendRecs[0].reason}</div>
                   <div className="flex flex-wrap gap-2">
                     {spendRecs.map(r => (
                       <div key={r.name}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold ${r.score >= 90 ? "lw-res-pill" : "lw-res-pill dim"}`}>
-                        <span className="lw-icon-frame"><GameIcon src={r.icon} alt={r.name} size={18} className="!filter-none" /></span> {r.name}
-                        <span className="text-[9px] font-bold" style={{ color: "var(--green2)" }}>
+                        className={`flex items-center gap-2 px-3 py-2 rounded-full text-[12px] font-bold ${r.score >= 90 ? "lw-res-pill" : "lw-res-pill dim"}`}>
+                        <span className="lw-icon-frame legendary"><GameIcon src={r.icon} alt={r.name} size={22} className="!filter-none" /></span> {r.name}
+                        <span className="text-[10px] font-black" style={{ color: r.score >= 90 ? "#1a0800" : "var(--green2)" }}>
                           {r.score >= 90 ? "+MAX" : `${r.score}%`}
                         </span>
                       </div>
@@ -319,7 +360,11 @@ export default function OrcDashboard() {
                   <div className="text-[9px] font-bold tracking-widest mb-2" style={{ color }}>{icon} {label}</div>
                   {items.map(r => (
                     <div key={r.name} style={{ borderBottom: "1px solid var(--border)" }} className="py-1.5 last:border-0">
-                      <div className="text-[11px] flex items-center gap-1.5" style={{ color: "var(--t2)" }}><GameIcon src={r.icon} alt={r.name} size={16} /> {r.name}</div>
+                      <div className="text-[11px] flex items-center gap-2 font-semibold" style={{ color: "var(--t1)" }}>
+                        <span className={`lw-icon-frame ${iconRarity(r.icon.includes("hero") ? "t-hero" : "t-build")}`}>
+                          <GameIcon src={r.icon} alt={r.name} size={20} className="!filter-none" />
+                        </span> {r.name}
+                      </div>
                       <div className="text-[9px] mt-0.5" style={{ color: "var(--t4)" }}>{r.tip || r.reason}</div>
                     </div>
                   ))}
@@ -374,8 +419,8 @@ export default function OrcDashboard() {
                 {isActive && <div className="blink absolute top-1 right-1 w-1.5 h-1.5 rounded-full" style={{ background: "var(--gold2)", boxShadow: "0 0 5px var(--gold2)" }} />}
                 <div style={{ color: "var(--t3)" }} className="text-[8px] tracking-wide">{l}</div>
                 <div className="flex justify-center my-1">
-                  <span className="lw-icon-frame">
-                    {vs ? <GameIcon src={vs.icon} alt={vs.short} size={26} className="!filter-none" /> : <GameIcon src={ICONS.dronePart} alt="AR" size={22} className="opacity-40 !filter-none" />}
+                  <span className={`lw-icon-frame ${vs ? "legendary" : "epic"}`}>
+                    {vs ? <GameIcon src={vs.icon} alt={vs.short} size={30} className="!filter-none" /> : <GameIcon src={ICONS.dronePart} alt="AR" size={26} className="opacity-50 !filter-none" />}
                   </span>
                 </div>
                 <div style={{ color: isActive ? "var(--gold2)" : "var(--t2)" }} className="text-[8px] font-bold">{vs ? vs.short : "AR"}</div>
@@ -386,13 +431,13 @@ export default function OrcDashboard() {
         </div>
       </div>
 
-      {/* ── AR TIMELINE ── */}
+      {/* ── AR TIMELINE (slot times) ── */}
       <div className="px-3.5 pt-4">
         <div className="flex items-center gap-2 mb-2.5">
           <span className="lw-section-title">Arms Race — Vandaag</span>
           <div className="lw-divider" />
         </div>
-        <div className="flex gap-1.5 overflow-x-auto pb-1">
+        <div className="flex gap-2 overflow-x-auto pb-1">
           {AR_SCHEDULE[st.getDay()].map((key, s) => {
             const phase = AR_PHASES[key];
             const isCur = s === slot;
@@ -400,15 +445,15 @@ export default function OrcDashboard() {
             const startH = SLOT_STARTS[s];
             const endH   = SLOT_ENDS[s] % 24;
             return (
-              <div key={s} className={`lw-game-tile px-2 py-2 text-center relative${isCur ? " current-ar" : isOvl ? " overlap-ar" : ""}`}
-                style={{ minWidth: 70, flex: 1 }}>
-                {isCur && <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-[7px] font-bold tracking-wide whitespace-nowrap px-1" style={{ color: "var(--blue2)", background: "var(--bg0)" }}>NU</div>}
-                {isOvl && <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-[7px] font-bold tracking-wide whitespace-nowrap px-1" style={{ color: "var(--gold2)", background: "var(--bg0)" }}>OVERLAP</div>}
+              <div key={s} className={`lw-game-tile px-2 py-2.5 text-center relative${isCur ? " current-ar" : isOvl ? " overlap-ar" : ""}`}
+                style={{ minWidth: 76, flex: 1 }}>
                 <div className="flex justify-center mb-1">
-                  <span className="lw-icon-frame"><GameIcon src={phase.icon} alt={phase.name} size={24} className="!filter-none" /></span>
+                  <span className={`lw-icon-frame ${iconRarity(phase.cls)}`}>
+                    <GameIcon src={phase.icon} alt={phase.name} size={28} className="!filter-none" />
+                  </span>
                 </div>
-                <div className="text-[8px] font-semibold" style={{ color: isCur ? "var(--blue2)" : isOvl ? "var(--gold2)" : "var(--t2)" }}>{phase.name}</div>
-                <div className="text-[8px] mt-0.5" style={{ color: "var(--t4)" }}>{String(startH).padStart(2,"0")}–{String(endH).padStart(2,"0")}</div>
+                <div className="lw-display text-[8px]" style={{ color: isCur ? "var(--blue2)" : isOvl ? "var(--gold3)" : "var(--t2)" }}>{phase.name}</div>
+                <div className="text-[8px] mt-0.5 font-bold" style={{ color: "var(--t4)" }}>{String(startH).padStart(2,"0")}–{String(endH).padStart(2,"0")}</div>
               </div>
             );
           })}
@@ -491,8 +536,9 @@ export default function OrcDashboard() {
 
       {/* FOOTER */}
       <div className="lw-footer px-4 py-4 text-[9px] text-center tracking-wide">
-        ORC v2.0 · Last War: Survival · Iconen via lastwartutorial.com · Data: lastwartutorial.com, csmit195.com · Niet gelieerd aan Last War ontwikkelaars
+        ORC v2.1 · Last War: Survival · Iconen via lastwartutorial.com · Data: lastwartutorial.com, csmit195.com · Niet gelieerd aan Last War ontwikkelaars
       </div>
+    </div>
     </div>
   );
 }
