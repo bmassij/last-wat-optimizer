@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { T, Lang } from "@/lib/i18n";
 import { getItemGuide, buildAdvisorPlan, type AdvisorStep } from "@/lib/knowledgeBase";
 import { getServerTime } from "@/lib/engines";
+import type { VisionInventoryResult } from "@/lib/visionInventory";
 import GameIcon from "./GameIcon";
 
 interface Props {
@@ -24,25 +25,175 @@ const ITEM_LABELS: Record<string, Record<Lang, string>> = {
   "valor-badge":      { nl: "Diamonds / Packs", en: "Diamonds / Packs", de: "Diamanten", fr: "Diamants", es: "Diamantes" },
 };
 
+function readFileAsBase64(file: File): Promise<{ base64: string; mimeType: string }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      const match = result.match(/^data:([^;]+);base64,(.+)$/);
+      if (!match) {
+        reject(new Error("Invalid image data"));
+        return;
+      }
+      resolve({ mimeType: match[1], base64: match[2] });
+    };
+    reader.onerror = () => reject(reader.error ?? new Error("Read failed"));
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function OrcAdvisor({ t, lang, utcOffset, onOpenTopic }: Props) {
+  const fileRef = useRef<HTMLInputElement>(null);
   const [hqLevel, setHqLevel] = useState(18);
   const [selected, setSelected] = useState<string[]>(["builder-speedup", "science-speedup", "hero-exp"]);
   const [plan, setPlan] = useState<AdvisorStep[] | null>(null);
+  const [vision, setVision] = useState<VisionInventoryResult | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const [visionError, setVisionError] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const items = getItemGuide(lang);
 
   function toggle(id: string) {
     setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   }
 
-  function generate() {
-    if (selected.length === 0) return;
+  function generate(inventory = selected, hq = hqLevel) {
+    if (inventory.length === 0) return;
     const st = getServerTime(utcOffset);
-    setPlan(buildAdvisorPlan({ hqLevel, inventory: selected }, lang, st));
+    setPlan(buildAdvisorPlan({ hqLevel: hq, inventory }, lang, st));
+  }
+
+  async function handleScreenshot(file: File) {
+    setVisionError(null);
+    setVision(null);
+
+    if (file.size > 3_500_000) {
+      setVisionError(t.advisorVisionError);
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(prev => {
+      if (prev) URL.revokeObjectURL(prev);
+      return url;
+    });
+
+    setScanning(true);
+    try {
+      const { base64, mimeType } = await readFileAsBase64(file);
+      const res = await fetch("/api/vision/inventory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: base64, mimeType, lang }),
+      });
+
+      const data = await res.json() as VisionInventoryResult & { error?: string };
+      if (!res.ok) {
+        const msg = res.status === 503 ? t.advisorVisionNoKey : (data.error ?? t.advisorVisionError);
+        setVisionError(msg);
+        return;
+      }
+
+      setVision(data);
+      const detected = data.detectedItems.length > 0 ? data.detectedItems : selected;
+      const hq = data.hqLevel ?? hqLevel;
+      if (data.hqLevel) setHqLevel(data.hqLevel);
+      if (data.detectedItems.length > 0) setSelected(data.detectedItems);
+      generate(detected, hq);
+    } catch {
+      setVisionError(t.advisorVisionError);
+    } finally {
+      setScanning(false);
+    }
   }
 
   return (
     <div className="px-3.5 pb-8">
       <div className="lw-panel p-4 mb-4 mt-3">
+        <div className="lw-gold-text text-[16px] mb-1">{t.advisorVisionTitle}</div>
+        <p className="text-[13px] font-medium mb-3" style={{ color: "var(--t2)" }}>{t.advisorVisionDesc}</p>
+        <p className="text-[11px] mb-3 font-medium" style={{ color: "var(--t3)" }}>{t.advisorVisionHint}</p>
+
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          className="hidden"
+          onChange={e => {
+            const f = e.target.files?.[0];
+            if (f) void handleScreenshot(f);
+            e.target.value = "";
+          }}
+        />
+
+        <div className="flex flex-wrap gap-2 items-center">
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            disabled={scanning}
+            className="lw-btn-gold py-2.5 px-4 text-[12px] disabled:opacity-60"
+          >
+            {scanning ? t.advisorVisionScanning : t.advisorVisionUpload}
+          </button>
+          {previewUrl && (
+            <img
+              src={previewUrl}
+              alt=""
+              className="h-14 w-14 rounded border object-cover"
+              style={{ borderColor: "var(--gold2)" }}
+            />
+          )}
+        </div>
+
+        {visionError && (
+          <p className="text-[11px] mt-2 font-medium" style={{ color: "var(--red2)" }}>{visionError}</p>
+        )}
+
+        {vision && (
+          <div className="mt-4 pt-3 border-t" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+            {vision.summary && (
+              <p className="text-[12px] font-medium mb-2" style={{ color: "var(--t1)" }}>
+                <span className="lw-label">{t.advisorVisionSummary}: </span>
+                {vision.summary}
+              </p>
+            )}
+            {vision.detectedItems.length > 0 && (
+              <div className="mb-2">
+                <div className="lw-label mb-1">{t.advisorVisionDetected}</div>
+                <div className="flex flex-wrap gap-1">
+                  {vision.detectedItems.map(id => (
+                    <span key={id} className="lw-res-pill text-[9px]">
+                      {ITEM_LABELS[id]?.[lang] ?? id}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {vision.openNowSteps.length > 0 && (
+              <div className="mb-2">
+                <div className="lw-label mb-1">{t.advisorVisionOpenNow}</div>
+                <ul className="text-[11px] space-y-1" style={{ color: "var(--t2)" }}>
+                  {vision.openNowSteps.map((step, i) => (
+                    <li key={i}>• {step}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {vision.saveForLater.length > 0 && (
+              <div>
+                <div className="lw-label mb-1">{t.advisorVisionSaveLater}</div>
+                <ul className="text-[11px] space-y-1" style={{ color: "var(--t3)" }}>
+                  {vision.saveForLater.map((step, i) => (
+                    <li key={i}>• {step}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="lw-panel p-4 mb-4">
         <div className="lw-gold-text text-[16px] mb-1">{t.advisorTitle}</div>
         <p className="text-[13px] font-medium mb-4" style={{ color: "var(--t2)" }}>{t.advisorDesc}</p>
 
@@ -81,7 +232,7 @@ export default function OrcAdvisor({ t, lang, utcOffset, onOpenTopic }: Props) {
 
         <button
           type="button"
-          onClick={generate}
+          onClick={() => generate()}
           disabled={selected.length === 0}
           className="lw-btn-gold w-full mt-4 py-3 text-[13px] disabled:opacity-50"
         >
